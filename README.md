@@ -1,23 +1,26 @@
-# Getting Started with [Fastify-CLI](https://www.npmjs.com/package/fastify-cli)
-This project was bootstrapped with Fastify-CLI.
+# Legitimoose API
+The API for the Legitimoose Minecraft server
 
-## Available Scripts
+![GitHub forks badge](https://img.shields.io/github/forks/LegitiDevs/api) ![Works on my machine badge](https://cdn.jsdelivr.net/gh/nikku/works-on-my-machine@v0.4.0/badge.svg)
 
-In the project directory, you can run:
+---
 
-### `npm run dev`
+## Set Up Development Environment
 
-To start the app in dev mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+To get started with the project, follow these steps:
 
-### `npm start`
+1. Clone or fork the repository.
 
-For production mode
+`git clone https://github.com/LegitiDevs/api.git`
 
-### `npm run test`
+2. Run the following commands
+```
+cd api
+npm install
+```
 
-Run the test cases.
+---
 
-## Learn More
+## How to Contribute
 
-To learn Fastify, check out the [Fastify documentation](https://fastify.dev/docs/latest/).
+Please refer to [CONTRIBUTING.md](https://github.com/LegitiDevs/api/blob/master/CONTRIBUTING.md)
