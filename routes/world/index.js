@@ -1,9 +1,17 @@
 "use strict";
+import "dotenv/config";
+import { MongoClient } from "mongodb";
 
-module.exports = async function (fastify, opts) {
-  fastify.get("/:world", async function (request, reply) {
-    const world = request.params.world;
+const MONGO_URI = process.env.MONGO_URI;
+const DB = process.env.DB;
+const mongoclient = new MongoClient(MONGO_URI);
+
+const worlds = mongoclient.db(DB).collection("worlds");
+
+export default async function (fastify, opts) {
+  fastify.get("/:uuid", async function (request, reply) {
+    const uuid = request.params.uuid;
+    const world = await worlds.findOne({ world_uuid: uuid });
     return world;
-    // TODO connect to db and world, then return it
   });
-};
+}
