@@ -2,6 +2,7 @@
 
 import path from "node:path";
 import AutoLoad from "@fastify/autoload";
+import cors from '@fastify/cors'
 
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -24,6 +25,7 @@ export default async function (fastify, opts) {
     options: Object.assign({}, opts)
   })*/
 
+  fastify.register(cors, {})
   // This loads all plugins defined in routes
   // define your routes in one of these
   fastify.register(AutoLoad, {
