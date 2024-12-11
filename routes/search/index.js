@@ -13,9 +13,7 @@ export default async function (fastify, opts) {
     const query = request.params.query;
     if (!query) return [];
 
-    const regex = new RegExp(query, "gi");
-
-    const matched_worlds = await worlds.find({ name: { $regex: regex } }).toArray();
+    const matched_worlds = await worlds.find({ $text: { $search: query } }).toArray();
     return matched_worlds;
   });
 }
