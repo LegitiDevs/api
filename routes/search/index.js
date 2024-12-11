@@ -11,9 +11,9 @@ const worlds = mongoclient.db(DB).collection("worlds");
 export default async function (fastify, opts) {
   fastify.get("/:query", async function (request, reply) {
     const query = request.params.query;
-    const regex = new RegExp(query, "gi");
+    if (!query) return [];
 
-    const matched_worlds = await worlds.find({ name: { $regex: regex } }).toArray();
+    const matched_worlds = await worlds.find({ $text: { $search: query } }).toArray();
     return matched_worlds;
   });
 }
