@@ -1,6 +1,7 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
+import { getSortingMethod } from "../../util/getSortingMethod";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -13,8 +14,9 @@ export default async function (fastify, opts) {
   fastify.get("/:index", async function (request, reply) {
     const index = request.params.index;
     const skip = Number.parseInt(index) * PAGE_SIZE;
+    const sortingMethod = getSortingMethod(request.query.sort)
 
-    const matched_worlds = await worlds.find().sort({ votes: -1 }).skip(skip).limit(PAGE_SIZE).toArray();
+    const matched_worlds = await worlds.find().sort(sortingMethod).skip(skip).limit(PAGE_SIZE).toArray();
     return matched_worlds;
   });
 }
