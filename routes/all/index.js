@@ -1,7 +1,7 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { getSortingMethod } from "../../util/getSortingMethod";
+import { getSortingMethod } from "../../util/getSortingMethod.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
