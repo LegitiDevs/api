@@ -20,5 +20,3 @@ export const getSortingMethod = (sortMethod, direction) => {
     const directionLookup = SORTING_METHOD_LOOKUP[direction] || ascending;
     return directionLookup[sortMethod] || directionLookup.default;
 };
-
-export const deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings = input => input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
