@@ -10,12 +10,12 @@ const mongoclient = new MongoClient(MONGO_URI);
 const worlds = mongoclient.db(DB).collection("worlds");
 
 export default async function (fastify, opts) {
-  fastify.get("/", async function (request, reply) {
+  fastify.get("/:owner", async function (request, reply) {
     const sortingMethod = getSortingMethod(
       request.query.sort,
       request.query.sortDirection
     );
-    const ownerUUID = request.query.owner
+    const ownerUUID = request.params.owner
     if (!ownerUUID) return []
 
     const worldsOwnedByOwner = await worlds.find({ owner_uuid: ownerUUID }).sort(sortingMethod).toArray();
