@@ -1,6 +1,6 @@
 "use strict";
 
-const VERSION = "2.0.1"
+const VERSION = "1.4.0"
 
 export default async function (fastify, opts) {
   fastify.get("/", async function (request, reply) {
