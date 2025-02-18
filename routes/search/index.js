@@ -1,8 +1,8 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { getSortingMethod } from "../../util/getSortingMethod.js";
-import { deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings } from "../../util/deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings.js";
+import { getSortingMethod } from "../../util/utils.js";
+import { deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings } from "../../util/utils.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;

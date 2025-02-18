@@ -1,1 +1,0 @@
-export const deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings = input => input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
