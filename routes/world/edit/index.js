@@ -3,7 +3,7 @@ import "dotenv/config";
 import { MongoClient } from "mongodb";
 import { canEditUserContent } from "../../../util/utils.js";
 import { CONFIG } from "../../../util/config.js";
-import { BodyContentNotFoundError, BodyTooLongError, BodyContentWrongTypeError, DeniedWorldAccessError, WorldNotFoundError, BodyMissingPropertyError, HeaderMissingPropertyError } from "../../../util/errors.js";
+import {  BodyTooLongError, BodyContentWrongTypeError, DeniedWorldAccessError, WorldNotFoundError, BodyMissingPropertyError, HeaderMissingPropertyError, JSONSyntaxError } from "../../../util/errors.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -21,12 +21,17 @@ export default async function (fastify, opts) {
 		if (body?.world_uuid == null) return reply.send(new BodyMissingPropertyError("world_uuid"))
 		if (request.headers?.authorization == null) return reply.send(new HeaderMissingPropertyError("Authorization"))
 
+		if (body.content == null) return reply.send(new BodyMissingPropertyError("content"));
+		if (typeof body.content !== "string")
+			return reply.send(new BodyContentWrongTypeError("string"));
+		if (body.content[0] != "{" || body.content[0] != "[") {
+			try { JSON.parse(body.content) } catch (err) {
+				return reply.send(new JSONSyntaxError(err.message))
+			}
+		}
+
 		const world = await worlds.findOne({ world_uuid: body.world_uuid });
 
-		if (body.content == null)
-			return reply.send(new BodyContentNotFoundError())
-		if (typeof body.content !== "string")
-			return reply.send(new BodyContentWrongTypeError("string"))
 		if (!world)
 			return reply.send(new WorldNotFoundError(body.world_uuid))
 		if (!(await canEditUserContent(request.headers.authorization, world.owner_uuid))) 
