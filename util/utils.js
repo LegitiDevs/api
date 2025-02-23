@@ -15,6 +15,13 @@ const SORTING_METHOD_LOOKUP = {
 	},
 };
 
+export const defaultFilter = {
+	$or: [
+		{ "legitidevs.unlisted": false },
+		{ "legitidevs.unlisted": { $exists: false } },
+	],
+};
+
 export const getSortingMethod = (sortMethod, direction) => {
 	const { ascending } = SORTING_METHOD_LOOKUP;
 	const directionLookup = SORTING_METHOD_LOOKUP[direction] || ascending;
@@ -38,12 +45,12 @@ export const rehyphenateUUID = (uuid) => {
 	return uuid.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, "$1-$2-$3-$4-$5");
 };
 
-export const canEditWorld = async (authorization_header, world_owner_uuid) => {
+export const canEditUserContent = async (authorization_header, profile_uuid) => {
 	if (!authorization_header) return false;
 	const access_token = authorization_header.split(" ")[1];
 
 	const profile_data = await getProfileData(access_token);
 
 	if (profile_data.error) return false;
-	return world_owner_uuid == rehyphenateUUID(profile_data.id);
+	return profile_uuid == rehyphenateUUID(profile_data.id);
 };

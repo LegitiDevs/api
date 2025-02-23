@@ -1,8 +1,11 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { getSortingMethod } from "../../util/utils.js";
-import { deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings } from "../../util/utils.js";
+import {
+	deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings,
+	defaultFilter,
+	getSortingMethod,
+} from "../../util/utils.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -20,7 +23,7 @@ export default async function (fastify, opts) {
     if (!query) return [];
 
     const matched_worlds = await worlds
-      .find({ name: { $regex: query, $options: "i" } })
+      .find({ name: { $regex: query, $options: "i" }, ...defaultFilter })
       .sort(sortingMethod)
       .toArray();
     return matched_worlds;

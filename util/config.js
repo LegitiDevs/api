@@ -1,5 +1,5 @@
 export const CONFIG = {
     LEGITIDEVS: {
-        DESCRIPTION_LENGTH: 600
+        MAX_BODY_LENGTH: 600
     }
 }
