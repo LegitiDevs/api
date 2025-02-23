@@ -1,5 +1,8 @@
+
 export const CONFIG = {
+    MAX_AUTH_CODE_LENGTH: 50,
     LEGITIDEVS: {
-        MAX_BODY_LENGTH: 600
+        MAX_WORLD_DESCRIPTION_LENGTH: 1000,
+        MAX_BODY_LENGTH: 2000
     }
 }
