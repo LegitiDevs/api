@@ -2,8 +2,6 @@
 import "dotenv/config";
 import { MongoClient } from "mongodb";
 import { canEditUserContent, defaultFilter, getSortingMethod } from "../../util/utils.js";
-import { CONFIG } from "../../util/config.js";
-import { BodyTooLongError } from "../../util/errors.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
