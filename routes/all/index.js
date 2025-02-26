@@ -1,7 +1,7 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { getSortingMethod } from "../../util/getSortingMethod.js";
+import { defaultFilter, getSortingMethod } from "../../util/utils.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -15,7 +15,7 @@ export default async function (fastify, opts) {
       request.query.sort,
       request.query.sortDirection
     );
-    const all = await worlds.find({}).sort(sortingMethod).toArray();
+    const all = await worlds.find(defaultFilter).sort(sortingMethod).toArray();
     return all;
   });
 }
