@@ -7,6 +7,7 @@ import cors from '@fastify/cors'
 
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import * as checkStatus from "./misc/checkStatus.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -15,6 +16,8 @@ const options = {};
 
 export default async function (fastify, opts) {
   // Place here your custom code!
+
+  checkStatus.main();
 
   // Do not touch the following lines
 
