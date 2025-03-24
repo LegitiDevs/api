@@ -9,6 +9,12 @@ import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as checkStatus from "./misc/checkStatus.js";
 
+async function main() {
+  checkStatus.main();
+}
+
+main();
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Pass --options via CLI arguments in command to enable these options.
@@ -16,8 +22,6 @@ const options = {};
 
 export default async function (fastify, opts) {
   // Place here your custom code!
-
-  checkStatus.main();
 
   // Do not touch the following lines
 
