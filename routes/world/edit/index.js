@@ -3,7 +3,7 @@ import "dotenv/config";
 import { MongoClient } from "mongodb";
 import { canEditUserContent } from "../../../util/utils.js";
 import { CONFIG } from "../../../util/config.js";
-import { TooLongError, BodyContentWrongTypeError, DeniedWorldAccessError, WorldNotFoundError, MissingPropertyError, JSONSyntaxError } from "../../../util/errors.js";
+import { TooLongError, WrongTypeError, DeniedWorldAccessError, WorldNotFoundError, MissingPropertyError, JSONSyntaxError } from "../../../util/errors.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -13,8 +13,8 @@ const worlds = mongoclient.db(DB).collection("worlds");
 
 export default async function (fastify, opts) {
 	fastify.post("/description", async function (request, reply) {
-		if (request.body >= CONFIG.LEGITIDEVS.MAX_BODY_LENGTH)
-			return reply.send(new TooLongError("Request body", CONFIG.LEGITIDEVS.MAX_BODY_LENGTH))
+		if (request.body >= CONFIG.MAX_REQUEST_BODY_LENGTH)
+			return reply.send(new TooLongError("Request body", CONFIG.MAX_REQUEST_BODY_LENGTH))
 
 		const body = JSON.parse(request.body);
 
@@ -25,7 +25,7 @@ export default async function (fastify, opts) {
 		if (body.content == null) return reply.send(new MissingPropertyError("content"));
 		if (body.content > CONFIG.LEGITIDEVS.MAX_WORLD_DESCRIPTION_LENGTH) return reply.send(new TooLongError("Content",CONFIG.LEGITIDEVS.MAX_WORLD_DESCRIPTION_LENGTH))
 		if (typeof body.content !== "string")
-			return reply.send(new BodyContentWrongTypeError("string"));
+			return reply.send(new WrongTypeError("body.content", "string"));
 		if (body.content[0] == "{" || body.content[0] == "[") {
 			try { JSON.parse(body.content) } catch (err) {
 				return reply.send(new JSONSyntaxError(err.message))
@@ -47,8 +47,8 @@ export default async function (fastify, opts) {
 	});
 
 	fastify.post("/unlist", async function (request, reply) {
-		if (request.body >= CONFIG.LEGITIDEVS.MAX_BODY_LENGTH)
-			return reply.send(new TooLongError(CONFIG.LEGITIDEVS.MAX_BODY_LENGTH))
+		if (request.body >= CONFIG.MAX_REQUEST_BODY_LENGTH)
+			return reply.send(new TooLongError(CONFIG.MAX_REQUEST_BODY_LENGTH))
 
 		const body = JSON.parse(request.body);
 
