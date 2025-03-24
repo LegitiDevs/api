@@ -2,7 +2,7 @@ import "dotenv/config";
 import { MongoClient } from "mongodb";
 
 const CONFIG = {
-	MILLISECONDS_TIL_NEXT_FETCH: 150000,
+	MILLISECONDS_TIL_NEXT_FETCH: 900000,
 	MAX_LENGTH_UNTIL_DATA_REMOVAL: 100,
 };
 
