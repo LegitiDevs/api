@@ -122,21 +122,30 @@ export const isValidRefreshToken = async (refreshToken, profile_uuid) => {
 	console.log(profile.authorization.refreshToken.token)
 	return hashToken(refreshToken) === profile.authorization.refreshToken.token;
 };
-
-export const canEditUserContent = async (authorization_header, profile_uuid) => {
-	if (!authorization_header) return false;
-	const access_token = authorization_header.split(" ")[1];
-
-	const profile_data = await getProfileData(access_token);
-
-	if (profile_data.error) return false;
-	return profile_uuid == rehyphenateUUID(profile_data.id);
-};
-
 // -------------------------------------------------------
 // ---------- DATA SENDING UTILITY FUNCTIONS -------------
 // -------------------------------------------------------
 
 export const wrapper = {
 	boolean: (boolean) => ({ success: boolean })
+}
+
+// ------------------------------------------------
+// ---------- MISC. UTILITY FUNCTIONS -------------
+// ------------------------------------------------
+
+export const timeFromNow = (seconds) => Math.floor(Date.now() / 1000 + seconds)
+
+export const validateProperty = (object, name, type, opts = {}) => {
+	if (object?.[name] === null) return false
+	if (typeof object[name] !== type) return false
+	
+	switch (typeof object[name]) {
+		case "string":
+			if (!opts?.maxLength) break;
+			if (object[name].length > opts.maxLength) return false
+			break;
+	}
+
+	return true
 }

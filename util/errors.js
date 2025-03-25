@@ -30,3 +30,4 @@ export class JSONSyntaxError extends (new ErrorBuilder(`'%{}'`, 400).build()) {}
 export class UnauthorizedError extends (new ErrorBuilder(`You are unauthorized to do this action.`, 401).build()) {}
 export class WorldNotFoundError extends (new ErrorBuilder(`World '%{}' does not exist.`, 404).build()) {}
 export class DeniedWorldAccessError extends (new ErrorBuilder(`You don't have access to edit world '%{}'.`, 401).build()) {}
+export class FormatError extends (new ErrorBuilder(`%{} has the wrong format. Check documentation at https://legitimoose.net/api for more info.`, 400).build()) {}

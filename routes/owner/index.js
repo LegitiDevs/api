@@ -1,7 +1,8 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { canEditUserContent, defaultFilter, getSortingMethod } from "../../util/utils.js";
+import { defaultFilter, getSortingMethod, isValidSession, validateProperty } from "../../util/utils.js";
+import { CONFIG } from "../../util/config.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -30,7 +31,10 @@ export default async function (fastify, opts) {
     const ownerUUID = request.params.owner;
 		if (!ownerUUID) return [];
     
-    if (request.headers?.authorization == null || !(await canEditUserContent(request.headers.authorization, ownerUUID))) {
+    if (
+      !validateProperty(request.headers, "session-token", "string", { maxLength: CONFIG.MAX_SESSION_TOKEN_LENGTH }) ||
+      !(await isValidSession(request.headers["session-token"], ownerUUID))
+    ) {
       const publicWorldsOwnedByOwner = await worlds.find({ owner_uuid: ownerUUID, ...defaultFilter }).sort(sortingMethod).toArray();
       return publicWorldsOwnedByOwner
     }
