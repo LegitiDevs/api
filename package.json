@@ -1,6 +1,6 @@
 {
   "name": "api",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "This project was bootstrapped with Fastify-CLI.",
   "main": "app.js",
   "directories": {
@@ -10,7 +10,7 @@
   "scripts": {
     "test": "node --test test/**/*.test.js",
     "start": "fastify start -l info app.js",
-    "dev": "fastify start -w -l info -P app.js"
+    "dev": "fastify start app.js --log-level debug --pretty-logs"
   },
   "keywords": [],
   "author": "LegitiDevs",
