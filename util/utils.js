@@ -144,6 +144,8 @@ export const validateProperty = (object, name, type, opts = {}) => {
 		case "string":
 			if (!opts?.maxLength) break;
 			if (object[name].length > opts.maxLength) return false
+			if (!opts?.minLength) break;
+			if (object[name].length < opts.minLength) return false
 			break;
 	}
 
