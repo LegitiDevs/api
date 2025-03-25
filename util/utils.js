@@ -118,8 +118,6 @@ export const isValidRefreshToken = async (refreshToken, profile_uuid) => {
 	if (!profile) return false;
 	if (!profile.authorization.refreshToken.token) return false;
 	if (Date.now() / 1000 > profile.authorization.refreshToken.expires_at) return true;
-	console.log(hashToken(refreshToken))
-	console.log(profile.authorization.refreshToken.token)
 	return hashToken(refreshToken) === profile.authorization.refreshToken.token;
 };
 // -------------------------------------------------------

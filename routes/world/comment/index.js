@@ -47,16 +47,11 @@ export default async function (fastify, opts) {
         const body = JSON.parse(request.body);
         if (!validateProperty(body, "uuid", "string", { minLength: 1, maxLength: CONFIG.MAX_UUID_LENGTH })) return reply.send(new FormatError("body.uuid"))     
 
-        const world = await worlds.findOne(
-            { "legitidevs.comments": { $elemMatch: { uuid: body.uuid } } },
-            { "legitidevs.comments.$": 1 }
-        );
+        const world = await worlds.findOne({ "legitidevs.comments.uuid": body.uuid });
         if (!world) return reply.send(new NotFoundError(`Comment ${body.uuid}`));
 
-        const comment = world.legitidevs.comments[0]
+        const comment = world.legitidevs.comments.find(({ uuid }) => uuid === body.uuid)
         if (!(await isValidSession(request.headers["session-token"], comment.profile_uuid))) return reply.send(new UnauthorizedError())
-        
-        console.log(comment.uuid === body.uuid)
         // Passed authorization checks.
         // Passed data checks.
         await worlds.updateOne(
