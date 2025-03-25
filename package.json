@@ -9,7 +9,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test test/**/*.test.js",
-    "start": "fastify start -l info app.js",
+    "start": "fastify start -l info -p 3001 app.js",
     "dev": "fastify start app.js --log-level debug --pretty-logs"
   },
   "keywords": [],
