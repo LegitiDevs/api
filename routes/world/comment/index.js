@@ -12,7 +12,21 @@ const mongoclient = new MongoClient(MONGO_URI);
 
 const worlds = mongoclient.db(DB).collection("worlds");
 
+/**
+ * 
+ * @param {import("fastify").FastifyInstance} fastify  
+ */
 export default async function (fastify, opts) {
+    // Anyone can run this.
+    fastify.get("/:uuid", async function (request, reply) {
+        const uuid = request.params.uuid;
+        const world = await worlds.findOne({ "legitidevs.comments.uuid": uuid });
+        if (!world) return reply.send(new NotFoundError(`Comment ${uuid}`));
+
+        const comment = world.legitidevs.comments.find((comment) => comment.uuid === uuid)
+        return { ...comment, from: { world_uuid: world.world_uuid, name: world.name, raw_name: world.raw_name } };
+    })
+
     // Anyone can run this as long as they have a valid account.
     fastify.post("/", async function (request, reply) {
         if (!validateProperty(request.headers, "session-token", "string", { maxLength: CONFIG.MAX_SESSION_TOKEN_LENGTH })) return reply.send(new FormatError("Request header 'Session-Token'"))
@@ -50,7 +64,7 @@ export default async function (fastify, opts) {
         const world = await worlds.findOne({ "legitidevs.comments.uuid": body.uuid });
         if (!world) return reply.send(new NotFoundError(`Comment ${body.uuid}`));
 
-        const comment = world.legitidevs.comments.find(({ uuid }) => uuid === body.uuid)
+        const comment = world.legitidevs.comments.find((comment) => comment.uuid === body.uuid)
         if (!(await isValidSession(request.headers["session-token"], comment.profile_uuid))) return reply.send(new UnauthorizedError())
         // Passed authorization checks.
         // Passed data checks.
