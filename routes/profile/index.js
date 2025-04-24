@@ -49,7 +49,7 @@ export default async function (fastify, opts) {
 					{ upsert: true }
 				);
 
-        return { sessionToken: sessionToken, refreshToken: refreshToken, profile_uuid: rehyphenateUUID(profile_data.id) }
+        return { sessionToken: sessionToken, refreshToken: refreshToken, profile_uuid: rehyphenateUUID(profile_data.id), refreshTokenExpiresAt: timeFromNow(CONFIG.REFRESH_TOKEN_VALID_TIME) }
     });
 
     fastify.post("/check-session", async function (request, reply) {
