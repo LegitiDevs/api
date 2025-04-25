@@ -95,6 +95,6 @@ export default async function (fastify, opts) {
 					{ upsert: true }
 				);
 
-        return { sessionToken: sessionToken, refreshToken: refreshToken }
+        return { sessionToken: sessionToken, refreshToken: refreshToken, refreshTokenExpiresAt: timeFromNow(CONFIG.REFRESH_TOKEN_VALID_TIME) }
     })
 }
