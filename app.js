@@ -3,17 +3,12 @@
 import "dotenv/config";
 import path from "node:path";
 import AutoLoad from "@fastify/autoload";
-import cors from '@fastify/cors'
+import cors from "@fastify/cors";
 
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as checkStatus from "./misc/checkStatus.js";
-
-async function main() {
-  checkStatus.main();
-}
-
-main();
+import RateLimit from "@fastify/rate-limit";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -21,25 +16,37 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const options = {};
 
 export default async function (fastify, opts) {
-  // Place here your custom code!
+	// Place here your custom code!
+  checkStatus.main();
+	// Do not touch the following lines
 
-  // Do not touch the following lines
-
-  // This loads all plugins defined in plugins
-  // those should be support plugins that are reused
-  // through your application
-  /*fastify.register(AutoLoad, {
+	// This loads all plugins defined in plugins
+	// those should be support plugins that are reused
+	// through your application
+	/*fastify.register(AutoLoad, {
     dir: path.join(__dirname, 'plugins'),
     options: Object.assign({}, opts)
   })*/
 
-  fastify.register(cors, {})
-  // This loads all plugins defined in routes
-  // define your routes in one of these
-  fastify.register(AutoLoad, {
-    dir: path.join(__dirname, "routes"),
-    options: Object.assign({}, opts),
-  });
+	await fastify.register(cors, {});
+	await fastify.register(RateLimit, {
+		max: 20,
+		timeWindow: 1000,
+	});
+	fastify.setNotFoundHandler(
+		{
+			preHandler: fastify.rateLimit({
+				max: 10,
+				timeWindow: 1000,
+			}),
+		}
+	);
+	// This loads all plugins defined in routes
+	// define your routes in one of these
+	await fastify.register(AutoLoad, {
+		dir: path.join(__dirname, "routes"),
+		options: Object.assign({}, opts),
+	});
 }
 
 export { options };

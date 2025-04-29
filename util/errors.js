@@ -31,4 +31,4 @@ export class UnauthorizedError extends (new ErrorBuilder(`You are unauthorized t
 export class WorldNotFoundError extends (new ErrorBuilder(`World '%{}' does not exist.`, 404).build()) {}
 export class DeniedWorldAccessError extends (new ErrorBuilder(`You don't have access to edit world '%{}'.`, 401).build()) {}
 export class FormatError extends (new ErrorBuilder(`%{} has the wrong format. Check documentation at https://legitimoose.net/api for more info.`, 400).build()) {}
-export class NotFoundError extends (new ErrorBuilder(`%{} couldn't be found.`, 400).build()) {}
+export class NotFoundError extends (new ErrorBuilder(`%{} couldn't be found.`, 404).build()) {}
