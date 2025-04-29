@@ -1,7 +1,7 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { defaultFilter, getSortingMethod } from "../../util/utils.js";
+import { defaultFilter, parseSortingMethod } from "../../util/utils.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -14,7 +14,7 @@ export default async function (fastify, opts) {
   fastify.get("/:index", async function (request, reply) {
     const index = request.params.index;
     const skip = Number.parseInt(index) * PAGE_SIZE;
-    const sortingMethod = getSortingMethod(
+    const sortingMethod = parseSortingMethod(
       request.query.sort,
       request.query.sortDirection
     );

@@ -4,7 +4,7 @@ import { MongoClient } from "mongodb";
 import {
 	deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings,
 	defaultFilter,
-	getSortingMethod,
+	parseSortingMethod,
 } from "../../util/utils.js";
 
 const MONGO_URI = process.env.MONGO_URI;
@@ -16,7 +16,7 @@ const worlds = mongoclient.db(DB).collection("worlds");
 export default async function (fastify, opts) {
   fastify.get("/:query", async function (request, reply) {
     const query = deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings(request.params.query);
-    const sortingMethod = getSortingMethod(
+    const sortingMethod = parseSortingMethod(
       request.query.sort,
       request.query.sortDirection
     );

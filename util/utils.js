@@ -36,7 +36,7 @@ export const defaultFilter = {
 	],
 };
 
-export const getSortingMethod = (sortMethod, direction) => {
+export const parseSortingMethod = (sortMethod, direction) => {
 	const { ascending } = SORTING_METHOD_LOOKUP;
 	const directionLookup = SORTING_METHOD_LOOKUP[direction] || ascending;
 	return directionLookup[sortMethod] || directionLookup.default;

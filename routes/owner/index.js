@@ -1,7 +1,7 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { defaultFilter, getSortingMethod, isValidSession, validateProperty } from "../../util/utils.js";
+import { defaultFilter, parseSortingMethod, isValidSession, validateProperty } from "../../util/utils.js";
 import { CONFIG } from "../../util/config.js";
 
 const MONGO_URI = process.env.MONGO_URI;
@@ -12,7 +12,7 @@ const worlds = mongoclient.db(DB).collection("worlds");
 
 export default async function (fastify, opts) {
   fastify.get("/:owner", async function (request, reply) {
-    const sortingMethod = getSortingMethod(
+    const sortingMethod = parseSortingMethod(
       request.query.sort,
       request.query.sortDirection
     );
@@ -24,7 +24,7 @@ export default async function (fastify, opts) {
   });
 
   fastify.post("/:owner", async function (request, reply) {
-    const sortingMethod = getSortingMethod(
+    const sortingMethod = parseSortingMethod(
 		  request.query.sort,
 		  request.query.sortDirection
 	  );
