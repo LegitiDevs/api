@@ -15,7 +15,10 @@ export const CONFIG = {
     MAX_REQUEST_BODY_LENGTH: 2000,
     V4: {
         WORLDS: {
-            DEFAULT_PAGE_SIZE: 27
+            DEFAULT_PAGE_SIZE: 27,
+            COMMENTS: {
+                DEFAULT_PAGE_SIZE: 20
+            }
         }
     },
 }

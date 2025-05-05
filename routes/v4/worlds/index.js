@@ -1,7 +1,7 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { defaultFilter, parseSortingMethod } from "../../../util/utils.js";
+import { defaultFilter, parseSortDirection, parseSortingMethod } from "../../../util/utils.js";
 import { CONFIG } from "../../../util/config.js";
 import { NotFoundError, WrongTypeError } from "../../../util/errors.js";
 
@@ -11,13 +11,7 @@ const mongoclient = new MongoClient(MONGO_URI);
 
 const worlds = mongoclient.db(DB).collection("worlds");
 
-// GET /worlds
-//          ?page=<index>
-//          &sortDirection=<ascending|descending>
-//          &sortMethod=<sortMethods>
-//          &max=<integer>
 /**
- *
  * @param {import("fastify").FastifyInstance} fastify
  */
 export default async function (fastify, opts) {
@@ -82,20 +76,91 @@ export default async function (fastify, opts) {
 
     fastify.get("/:world_uuid/comments", async function (request, reply) {
 		const world_uuid = request.params.world_uuid;
+		const page = request.query.page ?? null;
+		const max = request.query.max ?? null;
+		const sortDirection = request.query.sortDirection ?? "ascending";
+		
+		const parsedSortDirection = parseSortDirection(sortDirection);
+		const sortAggregateStage = {
+			$project: {
+				_id: 0,
+				"legitidevs.comments": {
+					$sortArray: {
+						input: "$legitidevs.comments",
+						sortBy: { date: parsedSortDirection },
+					},
+				},
+			},
+		};
 		const result = await worlds
 			.aggregate([
 				{ $match: { world_uuid } },
-				{
-					$project: {
-						_id: 0,
-						"legitidevs.comments": 1
-					},
-				},
+				sortAggregateStage
 			])
 			.toArray();
-        if (result.length === 0) reply.send(new NotFoundError(`World '${world_uuid}'`));
-        const comments = result[0]?.legitidevs?.comments
-        if (!comments) return [];
+		if (result.length === 0) reply.send(new NotFoundError(`World '${world_uuid}'`));
+		const comments = result[0]?.legitidevs?.comments;
+		if (!comments) return [];
+		
+		if (page !== null) {
+			const parsedPageInt = parseInt(page);
+			if (isNaN(parsedPageInt))
+				return reply.send(new WrongTypeError("request.query.page", "number"));
+			if (parsedPageInt < 0) return reply.code(400).send(new RangeError("request.query.page must be zero or a positive number."))
+
+			const parsedPageSizeInt = max
+				? parseInt(max)
+				: CONFIG.V4.WORLDS.COMMENTS.DEFAULT_PAGE_SIZE;
+			if (isNaN(parsedPageSizeInt))
+				return reply.send(new WrongTypeError("request.query.max", "number"));
+			if (parsedPageSizeInt <= 0) return reply.code(400).send(new RangeError("request.query.max must be above zero"))
+
+			const resultsInPage = await worlds
+				.aggregate([
+					{ $match: { world_uuid } },
+					sortAggregateStage,
+					{
+						$project: {
+							"legitidevs.comments": {
+								$slice: [
+									"$legitidevs.comments",
+									parsedPageInt * parsedPageSizeInt,
+									parsedPageSizeInt,
+								]
+							},
+						},
+					},
+				])
+				.toArray();
+
+			const comments = resultsInPage[0]?.legitidevs?.comments
+			return comments
+		}
+
+		if (max !== null) {
+			const parsedMaxInt = parseInt(max)
+			if (isNaN(parsedMaxInt))
+				return reply.send(new WrongTypeError("request.query.max", "number"));
+			if (parsedMaxInt <= 0) return reply.code(400).send(new RangeError("request.query.max must be above zero"))
+
+			const resultsInPage = await worlds
+				.aggregate([
+					{ $match: { world_uuid } },
+					sortAggregateStage,
+					{
+						$project: {
+							"legitidevs.comments": {
+								$slice: ["$legitidevs.comments", parsedMaxInt],
+							},
+						},
+					},
+				])
+				.toArray();
+
+			const comments = resultsInPage[0]?.legitidevs?.comments;
+			return comments;
+		}
+ 		
 		return comments;
 	});
 
