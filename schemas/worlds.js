@@ -1,7 +1,11 @@
 import { z } from "zod";
-import { UUIDSchema } from "./generic.js";
+import { nonEmptyObject, UUIDSchema } from "./generic.js";
+import { CONFIG } from "../util/config.js";
+import { SessionTokenSchema } from "./auth.js";
 
 //[Resource][Subresource][Operation][Type]Schema
+
+// GET REQUESTS
 
 const PageSchema = z.coerce.number().int().gte(0);
 const MaxSchema = z.coerce.number().int().gt(0);
@@ -51,4 +55,21 @@ export const WorldListSearchGetParamSchema = z.object({
 export const WorldListSearchGetQuerySchema = z.object({
     sortMethod: z.optional(SortMethodSchema),
     sortDirection: z.optional(SortDirectionSchema)
+})
+
+// PATCH REQUESTS
+
+export const WorldDescriptionSchema = z.string().max(CONFIG.LEGITIDEVS.MAX_WORLD_DESCRIPTION_LENGTH);
+export const WorldUnlistedSchema = z.boolean();
+export const WorldEditsSchema = nonEmptyObject({
+	description: z.optional(WorldDescriptionSchema),
+	unlisted: z.optional(WorldUnlistedSchema),
+});
+
+export const WorldPatchHeaderSchema = z.object({
+    "session-token": SessionTokenSchema
+})
+export const WorldPatchBodySchema = z.object({
+    world_uuid: UUIDSchema,
+    edits: WorldEditsSchema
 })

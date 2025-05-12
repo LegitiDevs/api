@@ -2,7 +2,8 @@
 import "dotenv/config";
 import { MongoClient } from "mongodb";
 import { NotFoundError } from "../../../../util/errors.js";
-import { WorldGetParamSchema } from "../../../../schemas/worlds.js";
+import { WorldGetParamSchema, WorldPatchBodySchema } from "../../../../schemas/worlds.js";
+import { StringifiedJsonSchema } from "../../../../schemas/generic.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -24,6 +25,12 @@ export default async function (fastify, opts) {
     });
 
     fastify.patch("/", async function (request, reply) {
-        return { _message: "wip" }
+        const bodyValidation = StringifiedJsonSchema.safeParse(request.body);
+        if (!bodyValidation.success) return reply.send(bodyValidation.error)
+
+        const { success, data, error } = WorldPatchBodySchema.safeParse(bodyValidation.data)
+        if (!success) return reply.send(error)
+
+        return data
     })
 }

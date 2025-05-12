@@ -1,4 +1,3 @@
-
 export const CONFIG = {
     MAX_ACCESS_TOKEN_LENGTH: 64,
     MAX_UUID_LENGTH: 64,
@@ -12,7 +11,7 @@ export const CONFIG = {
         MAX_WORLD_DESCRIPTION_LENGTH: 1024,
         MAX_WORLD_COMMENT_LENGTH: 1024,
     },
-    MAX_REQUEST_BODY_LENGTH: 2000,
+    MAX_REQUEST_BODY_LENGTH: 2048,
     V4: {
         WORLDS: {
             DEFAULT_PAGE_SIZE: 27,
