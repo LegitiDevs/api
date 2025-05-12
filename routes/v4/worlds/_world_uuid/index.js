@@ -1,8 +1,8 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { NotFoundError } from "../../../util/errors.js";
-import { WorldGetParamSchema } from "../../../schemas/worlds.js";
+import { NotFoundError } from "../../../../util/errors.js";
+import { WorldGetParamSchema } from "../../../../schemas/worlds.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;

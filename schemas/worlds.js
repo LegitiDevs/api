@@ -16,6 +16,7 @@ const SortDirectionSchema = z.union([
     z.literal("ascending"),
     z.literal("descending"),
 ]);
+const SearchQuerySchema = z.string();
 
 export const WorldListGetQuerySchema = z.object({
     page: z.optional(PageSchema),
@@ -42,3 +43,12 @@ export const WorldCommentGetParamSchema = z.object({
 	world_uuid: UUIDSchema,
     comment_uuid: UUIDSchema
 });
+
+export const WorldListSearchGetParamSchema = z.object({
+    query: SearchQuerySchema
+})
+
+export const WorldListSearchGetQuerySchema = z.object({
+    sortMethod: z.optional(SortMethodSchema),
+    sortDirection: z.optional(SortDirectionSchema)
+})

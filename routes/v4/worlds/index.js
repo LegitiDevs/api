@@ -3,7 +3,7 @@ import "dotenv/config";
 import { MongoClient } from "mongodb";
 import { defaultFilter, deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings, parseSortingMethod } from "../../../util/utils.js";
 import { CONFIG } from "../../../util/config.js";
-import { WorldListGetQuerySchema } from "../../../schemas/worlds.js";
+import { WorldListGetQuerySchema, WorldListSearchGetQuerySchema, WorldListSearchGetParamSchema } from "../../../schemas/worlds.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -69,14 +69,20 @@ export default async function (fastify, opts) {
 	});
 
 	fastify.get("/search/:query", async function (request, reply) {
+		const paramValidation = WorldListSearchGetParamSchema.safeParse(request.params)
+		const queryValidation = WorldListSearchGetQuerySchema.safeParse(request.query)
+
+		if (!paramValidation.success) return reply.send(paramValidation.error)
+		if (!queryValidation.success) return reply.send(queryValidation.error)
+
 		const query = deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings(
-			request.params.query
+			paramValidation.data.query
 		);
 
-		const sortingMethod = parseSortingMethod(
-			request.query.sort,
-			request.query.sortDirection
-		);
+		const sortMethod = queryValidation.data.sortMethod ?? "default";
+		const sortDirection = queryValidation.data.sortDirection ?? "ascending";
+
+		const sortingMethod = parseSortingMethod(sortMethod, sortDirection);
 		if (!query) return [];
 
 		const matched_worlds = await worlds
