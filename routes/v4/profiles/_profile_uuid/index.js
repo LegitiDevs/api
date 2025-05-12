@@ -6,7 +6,7 @@ const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
 const mongoclient = new MongoClient(MONGO_URI);
 
-const worlds = mongoclient.db(DB).collection("worlds");
+const profiles = mongoclient.db(DB).collection("profiles");
 
 /**
  * 
@@ -14,6 +14,14 @@ const worlds = mongoclient.db(DB).collection("worlds");
  */
 export default async function (fastify, opts) {
   fastify.get("/", async function (request, reply) {
-    return { _message: "WIP" }
+    return { _message: "wip" }
+  });
+
+  fastify.get("/worlds", async function (request, reply) {
+    return { _message: "wip" }
+  });
+
+  fastify.patch("/", async function (request, reply) {
+    return { _message: "wip" }
   });
 }

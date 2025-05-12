@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UUIDSchema } from "./generic";
+import { UUIDSchema } from "./generic.js";
 
 //[Resource][Subresource][Operation][Type]Schema
 
@@ -25,7 +25,7 @@ export const WorldListGetQuerySchema = z.object({
 })
 
 export const WorldGetParamSchema = z.object({
-    uuid: UUIDSchema
+    world_uuid: UUIDSchema
 })
 
 export const WorldCommentListGetParamSchema = z.object({
