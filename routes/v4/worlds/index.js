@@ -190,4 +190,8 @@ export default async function (fastify, opts) {
 		const { name, raw_name, comment } = result[0];
 		return { ...comment, from: { world_uuid, name, raw_name } };
 	});
+
+	fastify.patch("/:uuid", async function (request, reply) {
+		return { _message: "wip" }
+	})
 }
