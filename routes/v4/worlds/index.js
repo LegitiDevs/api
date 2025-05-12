@@ -4,6 +4,7 @@ import { MongoClient } from "mongodb";
 import { defaultFilter, parseSortDirection, parseSortingMethod } from "../../../util/utils.js";
 import { CONFIG } from "../../../util/config.js";
 import { NotFoundError, WrongTypeError } from "../../../util/errors.js";
+import { WorldsQuerySchema, WorldGetParamSchema, WorldCommentListGetParamSchema, WorldCommentListGetQuerySchema, WorldCommentGetParamSchema } from "../../../schemas/worlds.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -16,30 +17,25 @@ const worlds = mongoclient.db(DB).collection("worlds");
  */
 export default async function (fastify, opts) {
 	fastify.get("/", async function (request, reply) {
-		const page = request.query.page ?? null;
-		const sortMethod = request.query.sortMethod ?? "default";
-		const sortDirection = request.query.sortDirection ?? "ascending";
-		const max = request.query.max ?? null;
+		const { success, data, error } = WorldsQuerySchema.safeParse(request.query);
+		if (!success) return reply.send(error)
+
+		const page = data.page ?? null;
+		const sortMethod = data.sortMethod ?? "default";
+		const sortDirection = data.sortDirection ?? "ascending";
+		const max = data.max ?? null;
 
 		const parsedSortMethod = parseSortingMethod(sortMethod, sortDirection);
 
 		// PAGINATION
 		if (page !== null) {
-			const parsedPageInt = parseInt(page);
-			if (isNaN(parsedPageInt))
-				return reply.send(new WrongTypeError("request.query.page", "number"));
-
-			const parsedPageSizeInt = max
-				? parseInt(max)
-				: CONFIG.V4.WORLDS.DEFAULT_PAGE_SIZE;
-			if (isNaN(parsedPageSizeInt))
-				return reply.send(new WrongTypeError("request.query.max", "number"));
+			const pageSize = max ?? CONFIG.V4.WORLDS.DEFAULT_PAGE_SIZE;
 
 			const worldsInPage = await worlds
 				.find(defaultFilter)
 				.sort(parsedSortMethod)
-				.skip(parsedPageInt * parsedPageSizeInt)
-				.limit(parsedPageSizeInt)
+				.skip(page * pageSize)
+				.limit(pageSize)
 				.toArray();
 
 			return worldsInPage;
@@ -47,14 +43,10 @@ export default async function (fastify, opts) {
 
 		// LIMIT WORLDS
 		if (max !== null) {
-			const parsedMaxInt = parseInt(max);
-			if (isNaN(parsedMaxInt))
-				return reply.send(new WrongTypeError("request.query.max", "number"));
-
 			const worldsInLimit = await worlds
 				.find(defaultFilter)
 				.sort(parsedSortMethod)
-				.limit(parsedMaxInt)
+				.limit(max)
 				.toArray();
 
 			return worldsInLimit;
@@ -68,17 +60,26 @@ export default async function (fastify, opts) {
 	});
 
 	fastify.get("/:uuid", async function (request, reply) {
-		const uuid = request.params.uuid;
+		const { success, data, error } = WorldGetParamSchema.safeParse(request.params)
+		if (!success) return reply.send(error)
+
+		const uuid = data.uuid;
 		const world = await worlds.findOne({ world_uuid: uuid });
         if (!world) reply.send(new NotFoundError(`World '${uuid}'`));
 		return world;
 	});
 
     fastify.get("/:world_uuid/comments", async function (request, reply) {
-		const world_uuid = request.params.world_uuid;
-		const page = request.query.page ?? null;
-		const max = request.query.max ?? null;
-		const sortDirection = request.query.sortDirection ?? "ascending";
+		const paramValidation = WorldCommentListGetParamSchema.safeParse(request.params)
+		const queryValidation = WorldCommentListGetQuerySchema.safeParse(request.query)
+
+		if (!paramValidation.success) return reply.send(paramValidation.error) 
+		if (!queryValidation.success) return reply.send(queryValidation.error) 
+
+		const world_uuid = paramValidation.data.world_uuid;
+		const page = queryValidation.data.page ?? null;
+		const max = queryValidation.data.max ?? null;
+		const sortDirection = queryValidation.data.sortDirection ?? "ascending";
 		
 		const parsedSortDirection = parseSortDirection(sortDirection);
 		const sortAggregateStage = {
@@ -92,6 +93,8 @@ export default async function (fastify, opts) {
 				},
 			},
 		};
+
+		// Gets all the comments
 		const result = await worlds
 			.aggregate([
 				{ $match: { world_uuid } },
@@ -99,22 +102,14 @@ export default async function (fastify, opts) {
 			])
 			.toArray();
 		if (result.length === 0) reply.send(new NotFoundError(`World '${world_uuid}'`));
+		
 		const comments = result[0]?.legitidevs?.comments;
 		if (!comments) return [];
 		
 		if (page !== null) {
-			const parsedPageInt = parseInt(page);
-			if (isNaN(parsedPageInt))
-				return reply.send(new WrongTypeError("request.query.page", "number"));
-			if (parsedPageInt < 0) return reply.code(400).send(new RangeError("request.query.page must be zero or a positive number."))
-
-			const parsedPageSizeInt = max
-				? parseInt(max)
-				: CONFIG.V4.WORLDS.COMMENTS.DEFAULT_PAGE_SIZE;
-			if (isNaN(parsedPageSizeInt))
-				return reply.send(new WrongTypeError("request.query.max", "number"));
-			if (parsedPageSizeInt <= 0) return reply.code(400).send(new RangeError("request.query.max must be above zero"))
-
+			const pageSize = max ?? CONFIG.V4.WORLDS.COMMENTS.DEFAULT_PAGE_SIZE;
+			
+			// pagination
 			const resultsInPage = await worlds
 				.aggregate([
 					{ $match: { world_uuid } },
@@ -124,8 +119,8 @@ export default async function (fastify, opts) {
 							"legitidevs.comments": {
 								$slice: [
 									"$legitidevs.comments",
-									parsedPageInt * parsedPageSizeInt,
-									parsedPageSizeInt,
+									page * pageSize,
+									pageSize,
 								]
 							},
 						},
@@ -138,11 +133,7 @@ export default async function (fastify, opts) {
 		}
 
 		if (max !== null) {
-			const parsedMaxInt = parseInt(max)
-			if (isNaN(parsedMaxInt))
-				return reply.send(new WrongTypeError("request.query.max", "number"));
-			if (parsedMaxInt <= 0) return reply.code(400).send(new RangeError("request.query.max must be above zero"))
-
+			// limits to max
 			const resultsInPage = await worlds
 				.aggregate([
 					{ $match: { world_uuid } },
@@ -150,7 +141,7 @@ export default async function (fastify, opts) {
 					{
 						$project: {
 							"legitidevs.comments": {
-								$slice: ["$legitidevs.comments", parsedMaxInt],
+								$slice: ["$legitidevs.comments", max],
 							},
 						},
 					},
@@ -165,8 +156,11 @@ export default async function (fastify, opts) {
 	});
 
     fastify.get("/:world_uuid/comments/:comment_uuid", async function (request, reply) {
-		const world_uuid = request.params.world_uuid;
-		const comment_uuid = request.params.comment_uuid;
+		const { success, data, error } = WorldCommentGetParamSchema.safeParse(request.params)
+		if (!success) return reply.send(error)
+		
+		const world_uuid = data.world_uuid;
+		const comment_uuid = data.comment_uuid;
 		const result = await worlds
 			.aggregate([
 				{ $match: { world_uuid, "legitidevs.comments.uuid": comment_uuid } },
