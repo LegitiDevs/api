@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CONFIG } from "../util/config";
+import { CONFIG } from "../util/config.js";
 
 export const UUIDSchema = z.string().uuid();
 export const StringifiedJsonSchema = z.string().max(CONFIG.MAX_REQUEST_BODY_LENGTH).transform((str, ctx) => {
