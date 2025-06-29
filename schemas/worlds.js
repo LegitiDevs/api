@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { nonEmptyObject, UUIDSchema } from "./generic.js";
+import { z } from "zod/v4";
+import { nonEmptyObject } from "./generic.js";
 import { CONFIG } from "../util/config.js";
 import { SessionTokenSchema } from "./auth.js";
 
@@ -7,69 +7,69 @@ import { SessionTokenSchema } from "./auth.js";
 
 // GET REQUESTS
 
-const PageSchema = z.coerce.number().int().gte(0);
-const MaxSchema = z.coerce.number().int().gt(0);
+const PageSchema = z.coerce.number().nonnegative();
+const MaxSchema = z.coerce.number().gt(0);
 const SortMethodSchema = z.union([
     z.literal("default"), 
     z.literal("votes"),
     z.literal("visits"),
     z.literal("recently_scraped"),
     z.literal("recently_created"),
-])
+]).meta({ id: "SortMethodSchema" })
 const SortDirectionSchema = z.union([
     z.literal("ascending"),
     z.literal("descending"),
-]);
+]).meta({ id: "SortDirectionSchema" });
 const SearchQuerySchema = z.string();
 
 export const WorldListGetQuerySchema = z.object({
-    page: z.optional(PageSchema),
-    max: z.optional(MaxSchema),
-    sortMethod: z.optional(SortMethodSchema),
-    sortDirection: z.optional(SortDirectionSchema)
-})
+    page: PageSchema.optional(),
+    max: MaxSchema.optional(),
+    sortMethod: SortMethodSchema.optional(),
+    sortDirection: SortDirectionSchema.optional()
+}).meta({ id: "WorldListGetQuerySchema" })
 
 export const WorldGetParamSchema = z.object({
-    world_uuid: UUIDSchema
-})
+    world_uuid: z.uuid()
+}).meta({ id: "WorldGetParamSchema" })
 
 export const WorldCommentListGetParamSchema = z.object({
-    world_uuid: UUIDSchema
-})
+    world_uuid: z.uuid()
+}).meta({ id: "WorldCommentListGetParamSchema" })
 
 export const WorldCommentListGetQuerySchema = z.object({
-	page: z.optional(PageSchema),
-    max: z.optional(MaxSchema),
-    sortDirection: z.optional(SortDirectionSchema)
-});
+	page: PageSchema.optional(),
+    max: MaxSchema.optional(),
+    sortDirection: SortDirectionSchema.optional()
+}).meta({ id: "WorldCommentListGetQuerySchema" });
 
 export const WorldCommentGetParamSchema = z.object({
-	world_uuid: UUIDSchema,
-    comment_uuid: UUIDSchema
-});
+	world_uuid: z.uuid(),
+    comment_uuid: z.uuid()
+}).meta({ id: "WorldCommentGetParamSchema" });
 
 export const WorldListSearchGetParamSchema = z.object({
     query: SearchQuerySchema
-})
+}).meta({ id: "WorldListSearchGetParamSchema" })
 
 export const WorldListSearchGetQuerySchema = z.object({
-    sortMethod: z.optional(SortMethodSchema),
-    sortDirection: z.optional(SortDirectionSchema)
-})
+    sortMethod: SortMethodSchema.optional(),
+    sortDirection: SortDirectionSchema.optional()
+}).meta({ id: "WorldListSearchGetQuerySchema" })
 
 // PATCH REQUESTS
 
 export const WorldDescriptionSchema = z.string().max(CONFIG.LEGITIDEVS.MAX_WORLD_DESCRIPTION_LENGTH);
 export const WorldUnlistedSchema = z.boolean();
 export const WorldEditsSchema = nonEmptyObject({
-	description: z.optional(WorldDescriptionSchema),
-	unlisted: z.optional(WorldUnlistedSchema),
-});
+	description: WorldDescriptionSchema.optional(),
+	unlisted: WorldUnlistedSchema.optional(),
+}).meta({ id: "WorldEditsSchema" });
 
 export const WorldPatchHeaderSchema = z.object({
     "session-token": SessionTokenSchema
-})
+}).meta({ id: "WorldPatchHeaderSchema" });
 export const WorldPatchBodySchema = z.object({
-    world_uuid: UUIDSchema,
+    world_uuid: z.uuid(),
     edits: WorldEditsSchema
-})
+}).meta({ id: "WorldPatchBodySchema" });

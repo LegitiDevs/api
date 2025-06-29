@@ -4,6 +4,8 @@ import { MongoClient } from "mongodb";
 import { defaultFilter, deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings, parseSortingMethod } from "../../../util/utils.js";
 import { CONFIG } from "../../../util/config.js";
 import { WorldListGetQuerySchema, WorldListSearchGetQuerySchema, WorldListSearchGetParamSchema } from "../../../schemas/worlds.js";
+import { WorldSchema } from "../../../schemas/responses.js";
+import { z } from "zod/v4";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -15,14 +17,20 @@ const worlds = mongoclient.db(DB).collection("worlds");
  * @param {import("fastify").FastifyInstance} fastify
  */
 export default async function (fastify, opts) {
-	fastify.get("/", async function (request, reply) {
-		const { success, data, error } = WorldListGetQuerySchema.safeParse(request.query);
-		if (!success) return reply.send(error)
+	console.log("do i reach this 0000000000")
 
-		const page = data.page ?? null;
-		const sortMethod = data.sortMethod ?? "default";
-		const sortDirection = data.sortDirection ?? "ascending";
-		const max = data.max ?? null;
+	fastify.get("/", {
+		schema: {
+			querystring: WorldListGetQuerySchema,
+			response: {
+				200: WorldSchema.array()
+			}
+		}
+	}, async function (request, reply) {
+		const page = request.query.page ?? null;
+		const sortMethod = request.query.sortMethod ?? "default";
+		const sortDirection = request.query.sortDirection ?? "ascending";
+		const max = request.query.max ?? null;
 
 		const parsedSortMethod = parseSortingMethod(sortMethod, sortDirection);
 
@@ -57,8 +65,15 @@ export default async function (fastify, opts) {
 			.toArray();
 		return worldsFound;
 	});
+	console.log("do i reach this 222222222222")
 
-	fastify.get("/random", async function (request, reply) {
+	fastify.get("/random", {
+		schema: {
+			response: {
+				200: WorldSchema
+			}
+		}
+	}, async function (request, reply) {
 		const world = worlds.aggregate([
 			{ $sample: { size: 1 } },
 			{ $match: { ...defaultFilter } },
@@ -67,20 +82,22 @@ export default async function (fastify, opts) {
 			return doc;
 		}
 	});
-
-	fastify.get("/search/:query", async function (request, reply) {
-		const paramValidation = WorldListSearchGetParamSchema.safeParse(request.params)
-		const queryValidation = WorldListSearchGetQuerySchema.safeParse(request.query)
-
-		if (!paramValidation.success) return reply.send(paramValidation.error)
-		if (!queryValidation.success) return reply.send(queryValidation.error)
-
+	console.log("do i reach this AAAAA")
+	fastify.get("/search/:query", {
+		schema: {
+			params: WorldListSearchGetParamSchema,
+			querystring: WorldListSearchGetQuerySchema,
+			response: {
+				200: WorldSchema.array()
+			}
+		}
+	}, async function (request, reply) {
 		const query = deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings(
-			paramValidation.data.query
+			request.params.query
 		);
 
-		const sortMethod = queryValidation.data.sortMethod ?? "default";
-		const sortDirection = queryValidation.data.sortDirection ?? "ascending";
+		const sortMethod = request.query.sortMethod ?? "default";
+		const sortDirection = request.query.sortDirection ?? "ascending";
 
 		const sortingMethod = parseSortingMethod(sortMethod, sortDirection);
 		if (!query) return [];
@@ -91,4 +108,5 @@ export default async function (fastify, opts) {
 			.toArray();
 		return matched_worlds;
 	});
+	console.log("22222222222222222")
 }

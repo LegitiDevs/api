@@ -1,13 +1,12 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 import { CONFIG } from "../util/config.js";
 
-export const UUIDSchema = z.string().uuid();
 export const StringifiedJsonSchema = z.string().max(CONFIG.MAX_REQUEST_BODY_LENGTH).transform((str, ctx) => {
 	try {
 		return JSON.parse(str);
 	} catch (err) {
 		ctx.addIssue({
-			code: z.ZodIssueCode.custom,
+			code: "custom",
 			message: err.message,
 		});
 		return z.NEVER;

@@ -4,6 +4,8 @@ import { MongoClient } from "mongodb";
 import { NotFoundError } from "../../../../util/errors.js";
 import { WorldGetParamSchema, WorldPatchBodySchema } from "../../../../schemas/worlds.js";
 import { StringifiedJsonSchema } from "../../../../schemas/generic.js";
+import { WorldSchema } from "../../../../schemas/responses.js";
+import { z } from "zod/v4";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -15,7 +17,14 @@ const worlds = mongoclient.db(DB).collection("worlds");
  * @param {import("fastify").FastifyInstance} fastify
  */
 export default async function (fastify, opts) {
-    fastify.get("/", async function (request, reply) {
+    fastify.get("/", {
+        schema: {
+            params: WorldGetParamSchema,
+            response: {
+                200: WorldSchema
+            }
+        }
+    }, async function (request, reply) {
         const { success, data, error } = WorldGetParamSchema.safeParse(request.params)
         if (!success) return reply.send(error)
 
