@@ -1,6 +1,7 @@
 "use strict";
 
-const VERSION = "4.0.0-alpha5"
+import packageJson from '../package.json' with {type:"json"}
+const VERSION = packageJson.version
 
 export default async function (fastify, opts) {
   fastify.get("/", async function (request, reply) {
