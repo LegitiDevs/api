@@ -7,16 +7,16 @@ import { SessionTokenSchema } from "./auth.js";
 
 // GET REQUESTS
 
-const PageSchema = z.coerce.number().nonnegative();
-const MaxSchema = z.coerce.number().gt(0);
-const SortMethodSchema = z.union([
+export const PageSchema = z.coerce.number().nonnegative();
+export const MaxSchema = z.coerce.number().gt(0);
+export const SortMethodSchema = z.union([
     z.literal("default"), 
     z.literal("votes"),
     z.literal("visits"),
     z.literal("recently_scraped"),
     z.literal("recently_created"),
 ]).meta({ id: "SortMethodSchema" })
-const SortDirectionSchema = z.union([
+export const SortDirectionSchema = z.union([
     z.literal("ascending"),
     z.literal("descending"),
 ]).meta({ id: "SortDirectionSchema" });

@@ -5,6 +5,8 @@ import { parseSortDirection } from "../../../../../util/utils.js";
 import { CONFIG } from "../../../../../util/config.js";
 import { NotFoundError } from "../../../../../util/errors.js";
 import { WorldCommentListGetParamSchema, WorldCommentListGetQuerySchema, WorldCommentGetParamSchema } from "../../../../../schemas/worlds.js";
+import { CommentSchema } from "../../../../../schemas/responses.js";
+import { z } from "zod/v4";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -16,17 +18,20 @@ const worlds = mongoclient.db(DB).collection("worlds");
  * @param {import("fastify").FastifyInstance} fastify
  */
 export default async function (fastify, opts) {
-    fastify.get("/", async function (request, reply) {
-        const paramValidation = WorldCommentListGetParamSchema.safeParse(request.params)
-        const queryValidation = WorldCommentListGetQuerySchema.safeParse(request.query)
-    
-        if (!paramValidation.success) return reply.send(paramValidation.error) 
-        if (!queryValidation.success) return reply.send(queryValidation.error) 
-    
-        const world_uuid = paramValidation.data.world_uuid;
-        const page = queryValidation.data.page ?? null;
-        const max = queryValidation.data.max ?? null;
-        const sortDirection = queryValidation.data.sortDirection ?? "ascending";
+    // DONE
+    fastify.get("/", {
+        schema: {
+            params: WorldCommentListGetParamSchema,
+            querystring: WorldCommentListGetQuerySchema,
+            response: {
+                200: z.array(CommentSchema)
+            }
+        }
+    }, async function (request, reply) {
+        const world_uuid = request.params.world_uuid;
+        const page = request.query.page ?? null;
+        const max = request.query.max ?? null;
+        const sortDirection = request.query.sortDirection ?? "ascending";
         
         const parsedSortDirection = parseSortDirection(sortDirection);
         const sortAggregateStage = {
@@ -102,12 +107,14 @@ export default async function (fastify, opts) {
         return comments;
     });
     
-    fastify.get("/:comment_uuid", async function (request, reply) {
-        const { success, data, error } = WorldCommentGetParamSchema.safeParse(request.params)
-        if (!success) return reply.send(error)
-        
-        const world_uuid = data.world_uuid;
-        const comment_uuid = data.comment_uuid;
+    // DONE
+    fastify.get("/:comment_uuid", {
+        schema: {
+            params: WorldCommentGetParamSchema
+        }
+    }, async function (request, reply) {
+        const world_uuid = request.params.world_uuid;
+        const comment_uuid = request.params.comment_uuid;
         const result = await worlds
             .aggregate([
                 { $match: { world_uuid, "legitidevs.comments.uuid": comment_uuid } },

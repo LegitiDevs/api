@@ -17,8 +17,8 @@ const worlds = mongoclient.db(DB).collection("worlds");
  * @param {import("fastify").FastifyInstance} fastify
  */
 export default async function (fastify, opts) {
-	console.log("do i reach this 0000000000")
 
+	// DONE
 	fastify.get("/", {
 		schema: {
 			querystring: WorldListGetQuerySchema,
@@ -65,13 +65,11 @@ export default async function (fastify, opts) {
 			.toArray();
 		return worldsFound;
 	});
-	console.log("do i reach this 222222222222")
 
+	// DONE
 	fastify.get("/random", {
-		schema: {
-			response: {
-				200: WorldSchema
-			}
+		schema: { 
+			response: { 200: WorldSchema } 
 		}
 	}, async function (request, reply) {
 		const world = worlds.aggregate([
@@ -82,7 +80,8 @@ export default async function (fastify, opts) {
 			return doc;
 		}
 	});
-	console.log("do i reach this AAAAA")
+
+	// DONE
 	fastify.get("/search/:query", {
 		schema: {
 			params: WorldListSearchGetParamSchema,
@@ -108,5 +107,4 @@ export default async function (fastify, opts) {
 			.toArray();
 		return matched_worlds;
 	});
-	console.log("22222222222222222")
 }

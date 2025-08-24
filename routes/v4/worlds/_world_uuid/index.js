@@ -17,6 +17,7 @@ const worlds = mongoclient.db(DB).collection("worlds");
  * @param {import("fastify").FastifyInstance} fastify
  */
 export default async function (fastify, opts) {
+    // DONE
     fastify.get("/", {
         schema: {
             params: WorldGetParamSchema,
@@ -25,11 +26,8 @@ export default async function (fastify, opts) {
             }
         }
     }, async function (request, reply) {
-        const { success, data, error } = WorldGetParamSchema.safeParse(request.params)
-        if (!success) return reply.send(error)
-
-        const world = await worlds.findOne({ world_uuid: data.world_uuid });
-        if (!world) reply.send(new NotFoundError(`World '${data.world_uuid}'`));
+        const world = await worlds.findOne({ world_uuid: request.params.world_uuid });
+        if (!world) reply.send(new NotFoundError(`World '${request.params.world_uuid}'`));
         return world;
     });
 
