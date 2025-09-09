@@ -66,8 +66,12 @@ async function checkScraperStatus() {
 		scraperUptimeResult.length > 0
 			? scraperUptimeResult[0].lastScraperUptime
 			: null;
-	
-	const current_last_scraped = (await worlds.findOne({})).last_scraped
+	const oneWorld = await worlds.findOne({});
+	if (oneWorld === undefined) {
+		// TODO: Better return
+		return 0;
+	}
+	const current_last_scraped = oneWorld.last_scraped;
 	const last_status = scraperUptime;
 	let uptime = {
 		status: 0,
