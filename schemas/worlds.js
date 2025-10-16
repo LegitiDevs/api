@@ -61,6 +61,7 @@ export const WorldListSearchGetQuerySchema = z.object({
 
 export const WorldDescriptionSchema = z.string().max(CONFIG.LEGITIDEVS.MAX_WORLD_DESCRIPTION_LENGTH);
 export const WorldUnlistedSchema = z.boolean();
+
 export const WorldEditsSchema = nonEmptyObject({
 	description: WorldDescriptionSchema.optional(),
 	unlisted: WorldUnlistedSchema.optional(),
@@ -69,7 +70,11 @@ export const WorldEditsSchema = nonEmptyObject({
 export const WorldPatchHeaderSchema = z.object({
     "session-token": SessionTokenSchema
 }).meta({ id: "WorldPatchHeaderSchema" });
+
+export const WorldPatchParamSchema = z.object({
+    world_uuid: z.uuid()
+}).meta({ id: "WorldPatchParamSchema" })
+
 export const WorldPatchBodySchema = z.object({
-    world_uuid: z.uuid(),
     edits: WorldEditsSchema
 }).meta({ id: "WorldPatchBodySchema" });

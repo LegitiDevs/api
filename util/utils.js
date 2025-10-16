@@ -139,6 +139,8 @@ export const wrapper = {
 
 export const timeFromNow = (seconds) => Math.floor(Date.now() / 1000 + seconds)
 
+
+// will be removed after v4 fully takes over
 export const validateProperty = (object, name, type, opts = {}) => {
 	if (object?.[name] === null) return false
 	if (typeof object[name] !== type) return false

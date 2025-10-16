@@ -1,11 +1,12 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { NotFoundError } from "../../../../util/errors.js";
-import { WorldGetParamSchema, WorldPatchBodySchema } from "../../../../schemas/worlds.js";
+import { NotFoundError, UnauthorizedError } from "../../../../util/errors.js";
+import { WorldGetParamSchema, WorldPatchBodySchema, WorldPatchHeaderSchema, WorldPatchParamSchema } from "../../../../schemas/worlds.js";
 import { StringifiedJsonSchema } from "../../../../schemas/generic.js";
 import { WorldSchema } from "../../../../schemas/responses.js";
 import { z } from "zod/v4";
+import { isValidSession } from "../../../../util/utils.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -31,13 +32,42 @@ export default async function (fastify, opts) {
         return world;
     });
 
-    fastify.patch("/", async function (request, reply) {
-        const bodyValidation = StringifiedJsonSchema.safeParse(request.body);
-        if (!bodyValidation.success) return reply.send(bodyValidation.error)
+    fastify.patch("/", {
+        schema: {
+            params: WorldPatchParamSchema,
+            headers: WorldPatchHeaderSchema,
+            body: WorldPatchBodySchema,
+            response: {
+                200: WorldPatchBodySchema
+            }
+        }
+    }, async function (request, reply) {
+        /**
+         * expects:
+         * edit description
+         * edit unlist
+         */
+        
+        const world = await worlds.findOne({ world_uuid: request.params.world_uuid });
 
-        const { success, data, error } = WorldPatchBodySchema.safeParse(bodyValidation.data)
-        if (!success) return reply.send(error)
+		if (!world) return reply.send(new NotFoundError(`World ${request.params.world_uuid}`));
+		if (!(await isValidSession(request.headers["session-token"], world.owner_uuid))) return reply.send(new UnauthorizedError())
 
-        return data
+        const edits = request.body.edits
+
+        /*
+            keep the data put by the user as is.
+            only do basic zod validation checks like checking length and stuff,
+            but dont parse the data whatsoever.
+            zod may do basic checks to see if its a real link or smth,
+            but thats as simple as it can get.
+
+            the client must do the parsing themselves.
+            for example, the description can be a plain string or an snbt text component.
+            the api will not bother to parse it and itll keep it as a string.
+            the client must handle the data themselves to display the correct text.
+        */
+
+        return { _message: "WIP: This doesn't actually edit the data yet. Only checks for authorization.", edits }
     })
 }
