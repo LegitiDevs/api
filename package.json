@@ -9,7 +9,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test test/**/*.test.js",
-    "start": "fastify start -l info -p 3001 app.js",
+    "start": "fastify start -l info app.js",
     "dev": "fastify start app.js --log-level debug --pretty-logs"
   },
   "keywords": [],
@@ -20,9 +20,9 @@
     "@fastify/cors": "^11.0.0",
     "@fastify/rate-limit": "^10.2.2",
     "@fastify/sensible": "^6.0.0",
+    "dotenv": "^17.0.0",
     "@fastify/swagger": "^9.5.1",
     "@fastify/swagger-ui": "^5.2.3",
-    "dotenv": "^16.4.7",
     "fastify": "^5.0.0",
     "fastify-cli": "^7.0.1",
     "fastify-plugin": "^5.0.0",
@@ -31,5 +31,5 @@
     "zod": "^3.24.4",
     "zod-validation-error": "^3.4.1"
   },
-  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
+  "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b"
 }
