@@ -18,17 +18,14 @@ const worlds = mongoclient.db(DB).collection("worlds");
  */
 export default async function (fastify, opts) {
     // DONE
-    fastify.get(
-        "/", 
-        {
-            schema: {
-                params: WorldGetParamSchema,
-                response: {
-                    200: WorldSchema
-                }
+    fastify.get("/", {
+        schema: {
+            params: WorldGetParamSchema,
+            response: {
+                200: WorldSchema
             }
-        }, 
-        async function (request, reply) {
+        }
+    }, async function (request, reply) {
             const world = await worlds.findOne({ world_uuid: request.params.world_uuid });
             if (!world) reply.send(new ApiError(`World '${request.params.world_uuid}'`, 404));
             return world;
