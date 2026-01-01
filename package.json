@@ -7,6 +7,10 @@
     "test": "test"
   },
   "type": "module",
+  "imports": {
+    "#util/*": "./util/*",
+    "#schemas/*": "./schemas/*"
+  },
   "scripts": {
     "test": "node --test test/**/*.test.js",
     "start": "fastify start -l info app.js",

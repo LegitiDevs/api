@@ -23,7 +23,15 @@ class ErrorBuilder {
 	}
 }
 
-export class WrongTypeError extends (new ErrorBuilder(`%{} is not type of %{}`, 400).build()) {}
+export class ApiError extends Error {
+	constructor(message, statusCode) {
+		const _message = `(${statusCode}) ${message}`
+		super(_message);
+		this.name = "ApiError"
+		this.statusCode = statusCode;
+	}
+}
+
 export class MissingPropertyError extends (new ErrorBuilder(`%{} is missing '%{}'`, 400).build()) {}
 export class TooLongError extends (new ErrorBuilder(`%{} is above %{} characters.`, 400).build()) {}
 export class JSONSyntaxError extends (new ErrorBuilder(`'%{}'`, 400).build()) {}

@@ -1,10 +1,10 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { ProfileGetParamSchema, ProfileWorldListGetParamSchema, ProfileWorldListGetQuerySchema } from "../../../../schemas/profiles.js";
+import { ProfileGetParamSchema, ProfileWorldListGetParamSchema, ProfileWorldListGetQuerySchema } from "#schemas/profiles.js";
 import { z } from "zod/v4";
-import { WorldSchema } from "../../../../schemas/responses.js";
-import { defaultFilter, parseSortingMethod } from "../../../../util/utils.js";
+import { WorldSchema } from "#schemas/responses.js";
+import { defaultFilter, parseSortingMethod } from "#util/utils.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;

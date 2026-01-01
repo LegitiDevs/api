@@ -1,11 +1,11 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { parseSortDirection } from "../../../../../util/utils.js";
-import { CONFIG } from "../../../../../util/config.js";
-import { NotFoundError } from "../../../../../util/errors.js";
-import { WorldCommentListGetParamSchema, WorldCommentListGetQuerySchema, WorldCommentGetParamSchema } from "../../../../../schemas/worlds.js";
-import { CommentSchema } from "../../../../../schemas/responses.js";
+import { parseSortDirection } from "#util/utils.js";
+import { CONFIG } from "#util/config.js";
+import { ApiError } from "#util/errors.js";
+import { WorldCommentListGetParamSchema, WorldCommentListGetQuerySchema, WorldCommentGetParamSchema } from "#schemas/worlds.js";
+import { CommentSchema } from "#schemas/responses.js";
 import { z } from "zod/v4";
 
 const MONGO_URI = process.env.MONGO_URI;
@@ -53,7 +53,7 @@ export default async function (fastify, opts) {
                 sortAggregateStage
             ])
             .toArray();
-        if (result.length === 0) reply.send(new NotFoundError(`World '${world_uuid}'`));
+        if (result.length === 0) reply.send(new ApiError(`World ${world_uuid}`, 404));
         
         const comments = result[0]?.legitidevs?.comments;
         if (!comments) return [];
@@ -134,7 +134,7 @@ export default async function (fastify, opts) {
                 }}
             ])
             .toArray();
-        if (result.length === 0) reply.send(new NotFoundError(`Comment '${comment_uuid}' not found in world '${world_uuid}'`));
+        if (result.length === 0) reply.send(new ApiError(`Comment '${comment_uuid}' not found in world '${world_uuid}'`, 404));
         const { name, raw_name, comment } = result[0];
         return { ...comment, from: { world_uuid, name, raw_name } };
     });

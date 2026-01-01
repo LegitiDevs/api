@@ -1,12 +1,11 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { NotFoundError, UnauthorizedError } from "../../../../util/errors.js";
-import { WorldGetParamSchema, WorldPatchBodySchema, WorldPatchHeaderSchema, WorldPatchParamSchema } from "../../../../schemas/worlds.js";
-import { StringifiedJsonSchema } from "../../../../schemas/generic.js";
-import { WorldSchema } from "../../../../schemas/responses.js";
+import { ApiError, NotFoundError } from "#util/errors.js";
+import { WorldGetParamSchema, WorldPatchBodySchema, WorldPatchHeaderSchema, WorldPatchParamSchema } from "#schemas/worlds.js";
+import { WorldSchema } from "#schemas/responses.js";
 import { z } from "zod/v4";
-import { isValidSession } from "../../../../util/utils.js";
+import { isValidSession } from "#util/utils.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -19,18 +18,22 @@ const worlds = mongoclient.db(DB).collection("worlds");
  */
 export default async function (fastify, opts) {
     // DONE
-    fastify.get("/", {
-        schema: {
-            params: WorldGetParamSchema,
-            response: {
-                200: WorldSchema
+    fastify.get(
+        "/", 
+        {
+            schema: {
+                params: WorldGetParamSchema,
+                response: {
+                    200: WorldSchema
+                }
             }
+        }, 
+        async function (request, reply) {
+            const world = await worlds.findOne({ world_uuid: request.params.world_uuid });
+            if (!world) reply.send(new ApiError(`World '${request.params.world_uuid}'`, 404));
+            return world;
         }
-    }, async function (request, reply) {
-        const world = await worlds.findOne({ world_uuid: request.params.world_uuid });
-        if (!world) reply.send(new NotFoundError(`World '${request.params.world_uuid}'`));
-        return world;
-    });
+    );
 
     fastify.patch("/", {
         schema: {
@@ -51,7 +54,7 @@ export default async function (fastify, opts) {
         const world = await worlds.findOne({ world_uuid: request.params.world_uuid });
 
 		if (!world) return reply.send(new NotFoundError(`World ${request.params.world_uuid}`));
-		if (!(await isValidSession(request.headers["session-token"], world.owner_uuid))) return reply.send(new UnauthorizedError())
+		if (!(await isValidSession(request.headers["session-token"], world.owner_uuid))) return reply.send(new ApiError("Unauthorized", 401))
 
         const edits = request.body.edits
 
