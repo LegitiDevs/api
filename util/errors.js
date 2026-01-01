@@ -1,3 +1,14 @@
+export class ApiError extends Error {
+	constructor(message, statusCode) {
+		const _message = `(${statusCode}) ${message}`;
+		super(_message);
+		this.name = "ApiError";
+		this.statusCode = statusCode;
+	}
+}
+
+// Below is deprecated
+
 class ErrorBuilder {
 	constructor(message, statusCode) {
 		this._message = message;
@@ -23,20 +34,32 @@ class ErrorBuilder {
 	}
 }
 
-export class ApiError extends Error {
-	constructor(message, statusCode) {
-		const _message = `(${statusCode}) ${message}`
-		super(_message);
-		this.name = "ApiError"
-		this.statusCode = statusCode;
-	}
-}
-
-export class MissingPropertyError extends (new ErrorBuilder(`%{} is missing '%{}'`, 400).build()) {}
-export class TooLongError extends (new ErrorBuilder(`%{} is above %{} characters.`, 400).build()) {}
-export class JSONSyntaxError extends (new ErrorBuilder(`'%{}'`, 400).build()) {}
-export class UnauthorizedError extends (new ErrorBuilder(`You are unauthorized to do this action.`, 401).build()) {}
-export class WorldNotFoundError extends (new ErrorBuilder(`World '%{}' does not exist.`, 404).build()) {}
-export class DeniedWorldAccessError extends (new ErrorBuilder(`You don't have access to edit world '%{}'.`, 401).build()) {}
-export class FormatError extends (new ErrorBuilder(`%{} has the wrong format. Check documentation at https://legitimoose.net/api for more info.`, 400).build()) {}
-export class NotFoundError extends (new ErrorBuilder(`%{} couldn't be found.`, 404).build()) {}
+export class MissingPropertyError extends new ErrorBuilder(
+	`%{} is missing '%{}'`,
+	400
+).build() {}
+export class TooLongError extends new ErrorBuilder(
+	`%{} is above %{} characters.`,
+	400
+).build() {}
+export class JSONSyntaxError extends new ErrorBuilder(`'%{}'`, 400).build() {}
+export class UnauthorizedError extends new ErrorBuilder(
+	`You are unauthorized to do this action.`,
+	401
+).build() {}
+export class WorldNotFoundError extends new ErrorBuilder(
+	`World '%{}' does not exist.`,
+	404
+).build() {}
+export class DeniedWorldAccessError extends new ErrorBuilder(
+	`You don't have access to edit world '%{}'.`,
+	401
+).build() {}
+export class FormatError extends new ErrorBuilder(
+	`%{} has the wrong format. Check documentation at https://legitimoose.net/api for more info.`,
+	400
+).build() {}
+export class NotFoundError extends new ErrorBuilder(
+	`%{} couldn't be found.`,
+	404
+).build() {}
