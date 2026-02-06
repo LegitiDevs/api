@@ -9,7 +9,7 @@ const VERSION = packageJson.version
  * @param {import('fastify').FastifyInstance} fastify  
  */
 export default async function (fastify, opts) {
-  fastify.get("/"/**, {
+  fastify.get("/", {
     schema: {
       response: {
         200: z.object({
@@ -18,7 +18,7 @@ export default async function (fastify, opts) {
         })
       }
     }
-  }*/, async function (request, reply) {
+  }, async function (request, reply) {
     return { version: VERSION, _message: "v3 is deprecated! Please try migrating to v4 immediately. v3 will be removed soon." };
   });
 }

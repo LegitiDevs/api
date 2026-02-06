@@ -1,7 +1,7 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { defaultFilter, deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings, parseSortingMethod } from "#util/utils.js";
+import { defaultFilter, deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings, parseProject, parseSortingMethod } from "#util/utils.js";
 import { CONFIG } from "#util/config.js";
 import { WorldListGetQuerySchema, WorldListSearchGetQuerySchema, WorldListSearchGetParamSchema } from "#schemas/worlds.js";
 import { WorldSchema } from "#schemas/responses.js";
@@ -27,6 +27,13 @@ export default async function (fastify, opts) {
 			}
 		}
 	}, async function (request, reply) {
+		// "!field,field,!field"
+		const project = parseProject(request.query.project)
+		const sortBy = request.query.sort_by
+		const limit = request.query.limit
+		const offset = request.query.offset
+		// +votes, -votes
+
 		const page = request.query.page ?? null;
 		const sortMethod = request.query.sortMethod ?? "default";
 		const sortDirection = request.query.sortDirection ?? "ascending";

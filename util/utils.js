@@ -8,6 +8,46 @@ const mongoclient = new MongoClient(MONGO_URI);
 
 const profiles = mongoclient.db(DB).collection("profiles");
 
+export function parseProject(projectString) {
+	// Expects `field1,field2,!field3,!field4,..."
+	const groups = projectString.split(",").filter(str => str != "" && str != "");
+	const projectObj = {}
+	for (const group of groups) {
+		if (group[0] != "!") {
+			projectObj[group] = 1
+		} else {
+			projectObj[`${group.substring(1)}`] = 0
+		}
+	}
+
+	// eradicate the pesky _id
+	projectObj["_id"] = 0
+
+	return projectObj
+}
+
+export function parseSortBy(sortByString) {
+	// Expects `+-sort_method`
+	const sortDirection =
+		sortByString[0] != "+" && sortByString[0] != "-"
+			? "+"
+			: sortByString[0]
+	
+	const sortMethod = sortByString[0] != "+" && sortByString[0] != "-" ? sortByString : sortByString.substring(1)
+
+	const i = sortByString[0] == "-" ? 1 : -1
+
+	const sortMethods = {
+		default: { locked: i, player_count: i, votes: i },
+		votes: { votes: i },
+		visits: { visits: i },
+		recently_scraped: { last_scraped: i },
+		recently_created: { creation_date_unix_seconds: i },
+	};
+
+	return sortMethods[sortMethod]
+}
+
 // ----------------------------------------------------------------------
 // ---------- GET REQUESTS FOR WORLD DATA UTILITY FUNCTIONS -------------
 // ----------------------------------------------------------------------
