@@ -16,7 +16,7 @@ export function parseProject(projectString) {
 		if (group[0] != "!") {
 			projectObj[group] = 1
 		} else {
-			projectObj[`${group.substring(1)}`] = 0
+			projectObj[`${group.slice(1)}`] = 0
 		}
 	}
 
@@ -28,24 +28,22 @@ export function parseProject(projectString) {
 
 export function parseSortBy(sortByString) {
 	// Expects `+-sort_method`
-	const sortDirection =
-		sortByString[0] != "+" && sortByString[0] != "-"
-			? "+"
-			: sortByString[0]
-	
-	const sortMethod = sortByString[0] != "+" && sortByString[0] != "-" ? sortByString : sortByString.substring(1)
+	const hasDirection = sortByString[0] != "+" && sortByString[0] != "-";
 
-	const i = sortByString[0] == "-" ? 1 : -1
+	const sortDirection = hasDirection ? "+" : sortByString[0]
+	const order = sortDirection == "+" ? -1 : 1
+	
+	const sortMethod = hasDirection ? sortByString : sortByString.slice(1)
 
 	const sortMethods = {
-		default: { locked: i, player_count: i, votes: i },
-		votes: { votes: i },
-		visits: { visits: i },
-		recently_scraped: { last_scraped: i },
-		recently_created: { creation_date_unix_seconds: i },
+		default: { locked: order, player_count: order, votes: order },
+		votes: { votes: order },
+		visits: { visits: order },
+		recently_scraped: { last_scraped: order },
+		recently_created: { creation_date_unix_seconds: order },
 	};
 
-	return sortMethods[sortMethod]
+	return sortMethods[sortMethod] ?? sortMethods.default
 }
 
 // ----------------------------------------------------------------------
