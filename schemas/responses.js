@@ -28,6 +28,8 @@ export const WorldSchema = z.object({
     raw_description: z.string().describe("JSON Text representation of the description").optional(),
     icon: z.string().optional(),
     last_scraped: z.int().min(0).optional(),
+    jam_id: z.int().min(0).nullable().optional(),
+    jam_world: z.boolean().optional(),
     legitidevs: z.object({
         description: z.string().max(CONFIG.LEGITIDEVS.MAX_WORLD_DESCRIPTION_LENGTH).optional(),
         unlisted: z.boolean().optional(),
