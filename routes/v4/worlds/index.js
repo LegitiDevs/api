@@ -1,11 +1,9 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { defaultFilter, deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings, parseProject, parseSortingMethod } from "#util/utils.js";
-import { CONFIG } from "#util/config.js";
-import { WorldListGetQuerySchema, WorldListSearchGetQuerySchema, WorldListSearchGetParamSchema } from "#schemas/worlds.js";
+import { defaultFilter, deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings, parseProject, parseSortBy, parseSortingMethod } from "#util/utils.js";
+import { WorldListGetQuerySchema, WorldListSearchGetQuerySchema, WorldListSearchGetParamSchema, WorldRandomGetQuerySchema as WorldRandomGetQuerySchema, WorldSearchGetQuerySchema } from "#schemas/worlds.js";
 import { WorldSchema } from "#schemas/responses.js";
-import { z } from "zod/v4";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
@@ -22,96 +20,72 @@ export default async function (fastify, opts) {
 	fastify.get("/", {
 		schema: {
 			querystring: WorldListGetQuerySchema,
-			response: {
-				200: WorldSchema.array()
-			}
+			response: { 200: WorldSchema.array() }
 		}
 	}, async function (request, reply) {
 		// "!field,field,!field"
-		const project = parseProject(request.query.project)
-		const sortBy = request.query.sort_by
-		const limit = request.query.limit
-		const offset = request.query.offset
-		// +votes, -votes
+		const project = parseProject(request.query["project"])
+		const sortBy = parseSortBy(request.query["sort_by"])
+		const limit = request.query["limit"] ?? null
+		const offset = request.query["offset"] ?? null
 
-		const page = request.query.page ?? null;
-		const sortMethod = request.query.sortMethod ?? "default";
-		const sortDirection = request.query.sortDirection ?? "ascending";
-		const max = request.query.max ?? null;
+		const aggregateStages = [{ $match: defaultFilter }]
+		
+		if (offset !== null) aggregateStages.push({ $skip: offset })
+		if (limit !== null) aggregateStages.push({ $limit: limit })
 
-		const parsedSortMethod = parseSortingMethod(sortMethod, sortDirection);
+		aggregateStages.push({ $sort: sortBy }, { $project: project });
 
-		// PAGINATION
-		if (page !== null) {
-			const pageSize = max ?? CONFIG.V4.WORLDS.DEFAULT_PAGE_SIZE;
-
-			const worldsInPage = await worlds
-				.find(defaultFilter)
-				.sort(parsedSortMethod)
-				.skip(page * pageSize)
-				.limit(pageSize)
-				.toArray();
-
-			return worldsInPage;
-		}
-
-		// LIMIT WORLDS
-		if (max !== null) {
-			const worldsInLimit = await worlds
-				.find(defaultFilter)
-				.sort(parsedSortMethod)
-				.limit(max)
-				.toArray();
-
-			return worldsInLimit;
-		}
-
-		const worldsFound = await worlds
-			.find(defaultFilter)
-			.sort(parsedSortMethod)
-			.toArray();
-		return worldsFound;
+		return await worlds.aggregate(aggregateStages).toArray();
 	});
 
 	// DONE
 	fastify.get("/random", {
-		schema: { 
-			response: { 200: WorldSchema } 
+		schema: {
+			querystring: WorldRandomGetQuerySchema,
+			response: { 200: WorldSchema.array() } 
 		}
 	}, async function (request, reply) {
-		const world = worlds.aggregate([
-			{ $sample: { size: 1 } },
-			{ $match: { ...defaultFilter } },
-		]);
-		for await (const doc of world) {
-			return doc;
-		}
+		const project = parseProject(request.query["project"]);
+		const sortBy = parseSortBy(request.query["sort_by"]);
+		const limit = request.query["limit"] ?? 1;
+
+		return await worlds.aggregate([
+			{ $match: defaultFilter },
+			{ $sample: { size: limit } },
+			{ $sort: sortBy },
+			{ $project: project },
+		]).toArray()
 	});
 
 	// DONE
-	fastify.get("/search/:query", {
+	fastify.get("/search", {
 		schema: {
-			params: WorldListSearchGetParamSchema,
-			querystring: WorldListSearchGetQuerySchema,
+			querystring: WorldSearchGetQuerySchema,
 			response: {
 				200: WorldSchema.array()
 			}
 		}
 	}, async function (request, reply) {
-		const query = deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings(
-			request.params.query
-		);
+		// TODO: use zod and another tool to sanitize input after validation
+		const query = deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings(request.query["query"]);
+		console.log(query)
+		const project = parseProject(request.query["project"]);
+		const sortBy = parseSortBy(request.query["sort_by"]);
+		const limit = request.query["limit"] ?? null;
+		const offset = request.query["offset"] ?? null;
 
-		const sortMethod = request.query.sortMethod ?? "default";
-		const sortDirection = request.query.sortDirection ?? "ascending";
-
-		const sortingMethod = parseSortingMethod(sortMethod, sortDirection);
 		if (!query) return [];
 
-		const matched_worlds = await worlds
-			.find({ name: { $regex: query, $options: "i" }, ...defaultFilter })
-			.sort(sortingMethod)
-			.toArray();
-		return matched_worlds;
+		const aggregateStages = [
+			{ $match: { name: { $regex: query, $options: "i" }, ...defaultFilter } }
+		];
+
+		if (offset !== null) aggregateStages.push({ $skip: offset });
+		if (limit !== null) aggregateStages.push({ $limit: limit });
+
+		aggregateStages.push({ $sort: sortBy }, { $project: project });
+		console.log(await worlds.aggregate(aggregateStages).toArray());
+		return await worlds.aggregate(aggregateStages).toArray();
 	});
 }

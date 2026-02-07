@@ -7,8 +7,23 @@ import { SessionTokenSchema } from "./auth.js";
 
 // GET REQUESTS
 
-export const PageSchema = z.coerce.number().nonnegative();
-export const MaxSchema = z.coerce.number().gt(0);
+export const OffsetSchema = z.coerce.number().nonnegative();
+export const LimitSchema = z.coerce.number().gt(0);
+
+// + or - is optional
+export const SortMethodsEnum = z.enum([
+    "default",
+    "votes",
+    "visits",
+    "recently_scraped",
+    "recently_created"
+])
+export const SortBySchema = z.stringFormat("sort_by", str => {
+    if (str.startsWith("+") || str.startsWith("-")) {
+        return SortMethodsEnum.parse(str.slice(1))
+    }
+    return SortMethodsEnum.parse(str)
+})
 export const SortMethodSchema = z.union([
     z.literal("default"), 
     z.literal("votes"),
@@ -23,11 +38,13 @@ export const SortDirectionSchema = z.union([
 const SearchQuerySchema = z.string();
 
 export const WorldListGetQuerySchema = z.object({
-    page: PageSchema.optional(),
-    max: MaxSchema.optional(),
-    sortMethod: SortMethodSchema.optional(),
-    sortDirection: SortDirectionSchema.optional()
+    sort_by: SortBySchema.optional(),
+    project: z.string().optional(),
+    offset: OffsetSchema.optional(),
+    limit: LimitSchema.optional(),
 }).meta({ id: "WorldListGetQuerySchema" })
+
+export const WorldRandomGetQuerySchema = WorldListGetQuerySchema.omit({ offset: true }).meta({ id: "WorldRandomGetQuerySchema" })
 
 export const WorldGetParamSchema = z.object({
     world_uuid: z.uuid()
@@ -38,8 +55,8 @@ export const WorldCommentListGetParamSchema = z.object({
 }).meta({ id: "WorldCommentListGetParamSchema" })
 
 export const WorldCommentListGetQuerySchema = z.object({
-	page: PageSchema.optional(),
-    max: MaxSchema.optional(),
+	page: OffsetSchema.optional(),
+    max: LimitSchema.optional(),
     sortDirection: SortDirectionSchema.optional()
 }).meta({ id: "WorldCommentListGetQuerySchema" });
 
@@ -56,6 +73,10 @@ export const WorldListSearchGetQuerySchema = z.object({
     sortMethod: SortMethodSchema.optional(),
     sortDirection: SortDirectionSchema.optional()
 }).meta({ id: "WorldListSearchGetQuerySchema" })
+
+export const WorldSearchGetQuerySchema = WorldListGetQuerySchema.extend({
+    query: z.string()
+}).meta({ id: "WorldSearchGetQuerySchema" })
 
 // PATCH REQUESTS
 

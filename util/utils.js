@@ -1,4 +1,5 @@
 import { randomBytes,createHash } from 'crypto'
+import { ApiError } from '#util/errors.js';
 import { CONFIG } from './config.js';
 import { MongoClient } from 'mongodb';
 
@@ -8,25 +9,35 @@ const mongoclient = new MongoClient(MONGO_URI);
 
 const profiles = mongoclient.db(DB).collection("profiles");
 
-export function parseProject(projectString) {
+export function parseProject(projectString = "") {
 	// Expects `field1,field2,!field3,!field4,..."
+	console.log("hello?")
 	const groups = projectString.split(",").filter(str => str != "" && str != "");
 	const projectObj = {}
+	console.log("passed seperation")
+
+	if (groups.length === 0) return {_id: 0}
+
+	const hasInclusion = groups[0][0] !== "!"
 	for (const group of groups) {
-		if (group[0] != "!") {
-			projectObj[group] = 1
+		if (group[0] === "!") {
+			if (hasInclusion) throw new ApiError("Cannot combine exclusion and inclusion on projection.", 400)
+			projectObj[`${group.slice(1)}`] = 0;
 		} else {
-			projectObj[`${group.slice(1)}`] = 0
+			if (!hasInclusion) throw new ApiError("Cannot combine exclusion and inclusion on projection.", 400)
+			projectObj[group] = 1;
 		}
 	}
-
+	console.log(projectObj)
+	
 	// eradicate the pesky _id
 	projectObj["_id"] = 0
-
+	console.log("passed everything")
+	
 	return projectObj
 }
 
-export function parseSortBy(sortByString) {
+export function parseSortBy(sortByString = "") {
 	// Expects `+-sort_method`
 	const hasDirection = sortByString[0] != "+" && sortByString[0] != "-";
 

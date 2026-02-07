@@ -24,15 +24,15 @@
     "@fastify/cors": "^11.0.0",
     "@fastify/rate-limit": "^10.2.2",
     "@fastify/sensible": "^6.0.0",
-    "dotenv": "^17.0.0",
     "@fastify/swagger": "^9.5.1",
     "@fastify/swagger-ui": "^5.2.3",
+    "dotenv": "^17.0.0",
     "fastify": "^5.0.0",
     "fastify-cli": "^7.0.1",
     "fastify-plugin": "^5.0.0",
-    "fastify-type-provider-zod": "^5.0.1",
+    "fastify-type-provider-zod": "^5.1.0",
     "mongodb": "^6.11.0",
-    "zod": "^3.24.4",
+    "zod": "^3.25.76",
     "zod-validation-error": "^3.4.1"
   },
   "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b"

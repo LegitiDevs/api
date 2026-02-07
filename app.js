@@ -13,6 +13,8 @@ import SwaggerUI from "@fastify/swagger-ui";
 import cors from "@fastify/cors";
 import RateLimit from "@fastify/rate-limit";
 import AutoLoad from "@fastify/autoload";
+import { ApiError } from "#util/errors.js";
+import { fromError, fromZodError } from "zod-validation-error";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -28,19 +30,11 @@ export default async function (fastify, opts) {
 
 	fastify.setErrorHandler((err, req, reply) => {
 	    if (hasZodFastifySchemaValidationErrors(err)) {
-	        return reply.code(400).send({
-	            error: 'Response Validation Error',
-	            message: "Request doesn't match the schema",
-	            statusCode: 400,
-	            details: {
-	                issues: err.validation,
-	                method: req.method,
-	                url: req.url,
-	            },
-	        })
+	        return reply.code(400).send(fromError(err));
 	    }
 
 	    if (isResponseSerializationError(err)) {
+			z
 	        return reply.code(500).send({
 	            error: 'Internal Server Error',
 	            message: "Response doesn't match the schema",
@@ -52,8 +46,10 @@ export default async function (fastify, opts) {
 	            },
 	        })
 	    }
-	
-	    // the rest of the error handler
+
+		if (err instanceof ApiError) {
+			return reply.code(err.statusCode).send(err)
+		}
 	})
 
 	await fastify.register(Swagger, {
