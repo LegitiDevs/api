@@ -1,6 +1,6 @@
 {
   "name": "api",
-  "version": "4.0.0-alpha5",
+  "version": "4.0.0-alpha6",
   "description": "This project was bootstrapped with Fastify-CLI.",
   "main": "app.js",
   "directories": {
