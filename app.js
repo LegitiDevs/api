@@ -34,7 +34,6 @@ export default async function (fastify, opts) {
 	    }
 
 	    if (isResponseSerializationError(err)) {
-			z
 	        return reply.code(500).send({
 	            error: 'Internal Server Error',
 	            message: "Response doesn't match the schema",
