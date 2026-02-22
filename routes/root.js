@@ -1,6 +1,7 @@
 "use strict";
 
-const VERSION = "3.4.0";
+import packageJson from '../package.json' with { type: "json" };
+const VERSION = packageJson.version;
 const SCRAPER_URI = process.env.SCRAPER_URI;
 
 export default async function (fastify, opts) {
