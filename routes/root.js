@@ -1,8 +1,9 @@
 "use strict";
 
 import { z } from 'zod/v4';
-import packageJson from '../package.json' with {type:"json"}
+import packageJson from '../package.json' with {type: "json"}
 const VERSION = packageJson.version
+const SCRAPER_URI = process.env.SCRAPER_URI;
 
 /**
  * 
@@ -14,11 +15,22 @@ export default async function (fastify, opts) {
       response: {
         200: z.object({
           version: z.string(),
+          scraper: z.object({
+            version: z.string().optional(),
+          }),
           _message: z.string().optional()
         })
       }
     }
   }, async function (request, reply) {
-    return { version: VERSION, _message: "v3 is deprecated! Please try migrating to v4 immediately. v3 will be removed soon." };
+    var scraperData;
+    try {
+      const scraper = await fetch(SCRAPER_URI);
+      scraperData = await scraper.json();
+    } catch (e) {
+      scraperData = {};
+    }
+
+    return { version: VERSION, _message: "v3 is deprecated! Please try migrating to v4 immediately. v3 will be removed soon.", scraper: scraperData };
   });
 }

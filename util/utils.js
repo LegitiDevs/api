@@ -121,7 +121,11 @@ export const rehyphenateUUID = (uuid) => {
 	return uuid.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, "$1-$2-$3-$4-$5");
 };
 
-export const shortenUUID = (uuid) => uuid.replaceAll("-","");
+export const standardizeUUID = (uuid) => {
+	if (uuid.includes("-")) return uuid; else return rehyphenateUUID(uuid);
+};
+
+export const shortenUUID = (uuid) => uuid.replaceAll("-", "");
 
 /**
  * Checks if the session token of the provided profile is expired.
@@ -132,7 +136,7 @@ export const isSessionTokenExpired = async (profile_uuid) => {
 	if (!profile) return true;
 	if (!profile.authorization.sessionToken) return true;
 	if (Date.now() / 1000 > profile.authorization.sessionToken.expires_at) return true;
-	return false; 
+	return false;
 }
 
 /**
@@ -193,7 +197,7 @@ export const timeFromNow = (seconds) => Math.floor(Date.now() / 1000 + seconds)
 export const validateProperty = (object, name, type, opts = {}) => {
 	if (object?.[name] === null) return false
 	if (typeof object[name] !== type) return false
-	
+
 	switch (typeof object[name]) {
 		case "string":
 			if (!opts?.maxLength) break;
