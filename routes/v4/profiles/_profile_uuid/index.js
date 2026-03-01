@@ -6,18 +6,14 @@ import { z } from "zod/v4";
 import { WorldSchema } from "#schemas/responses.js";
 import { defaultFilter, parseSortingMethod } from "#util/utils.js";
 
-const MONGO_URI = process.env.MONGO_URI;
-const DB = process.env.DB;
-const mongoclient = new MongoClient(MONGO_URI);
-
-const worlds = mongoclient.db(DB).collection("worlds");
-const profiles = mongoclient.db(DB).collection("profiles");
-
 /**
  * 
  * @param {import("fastify").FastifyInstance} fastify 
  */
 export default async function (fastify, opts) {
+	const worlds = fastify.mongo.db.collection("worlds");
+	const profiles = fastify.mongo.db.collection("profiles");
+
   fastify.get("/", {
     schema: {
       params: ProfileGetParamSchema
@@ -29,10 +25,7 @@ export default async function (fastify, opts) {
   fastify.get("/worlds", {
     schema: {
       params: ProfileWorldListGetParamSchema,
-      querystring: ProfileWorldListGetQuerySchema,
-      response: {
-        200: z.array(WorldSchema)
-      }
+      querystring: ProfileWorldListGetQuerySchema
     }
   }, async function (request, reply) {
     const sortingMethod = parseSortingMethod(

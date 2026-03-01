@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "fastify start -l info app.js",
-    "dev": "nodemon --exec fastify start app.js --log-level debug --pretty-logs"
+    "dev": "fastify start app.js --log-level debug --pretty-logs"
   },
   "keywords": [],
   "author": "LegitiDevs",
@@ -18,14 +18,15 @@
   "dependencies": {
     "@fastify/autoload": "^6.3.1",
     "@fastify/cors": "^11.2.0",
+    "@fastify/mongodb": "^10.0.0",
     "@fastify/rate-limit": "^10.2.2",
     "@fastify/sensible": "^6.0.4",
     "dotenv": "^17.3.1",
     "fastify": "^5.7.4",
     "fastify-cli": "^7.4.1",
     "fastify-plugin": "^5.1.0",
-    "mongodb": "^6.21.0",
     "fastify-type-provider-zod": "^5.1.0",
+    "mongodb": "^6.21.0",
     "zod": "^3.25.76",
     "zod-validation-error": "^3.4.1"
   },

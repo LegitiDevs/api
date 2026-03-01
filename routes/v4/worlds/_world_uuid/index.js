@@ -1,30 +1,18 @@
 "use strict";
 import "dotenv/config";
-import { MongoClient } from "mongodb";
 import { ApiError, NotFoundError } from "#util/errors.js";
 import { WorldGetParamSchema, WorldPatchBodySchema, WorldPatchHeaderSchema, WorldPatchParamSchema } from "#schemas/worlds.js";
 import { WorldSchema } from "#schemas/responses.js";
-import { z } from "zod/v4";
 import { isValidSession } from "#util/utils.js";
-
-const MONGO_URI = process.env.MONGO_URI;
-const DB = process.env.DB;
-const mongoclient = new MongoClient(MONGO_URI);
-
-const worlds = mongoclient.db(DB).collection("worlds");
 
 /**
  * @param {import("fastify").FastifyInstance} fastify
  */
 export default async function (fastify, opts) {
+	const worlds = fastify.mongo.db.collection("worlds");
     // DONE
     fastify.get("/", {
-        schema: {
-            params: WorldGetParamSchema,
-            response: {
-                200: WorldSchema
-            }
-        }
+        schema: { params: WorldGetParamSchema }
     }, async function (request, reply) {
             const world = await worlds.findOne({ world_uuid: request.params.world_uuid });
             if (!world) reply.send(new ApiError(`World '${request.params.world_uuid}'`, 404));
@@ -36,10 +24,7 @@ export default async function (fastify, opts) {
         schema: {
             params: WorldPatchParamSchema,
             headers: WorldPatchHeaderSchema,
-            body: WorldPatchBodySchema,
-            response: {
-                200: WorldPatchBodySchema
-            }
+            body: WorldPatchBodySchema
         }
     }, async function (request, reply) {
         /**

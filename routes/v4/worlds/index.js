@@ -1,26 +1,19 @@
 "use strict";
 import "dotenv/config";
-import { MongoClient } from "mongodb";
 import { defaultFilter, deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings, parseProject, parseSortBy, parseSortingMethod } from "#util/utils.js";
 import { WorldListGetQuerySchema, WorldListSearchGetQuerySchema, WorldListSearchGetParamSchema, WorldRandomGetQuerySchema as WorldRandomGetQuerySchema, WorldSearchGetQuerySchema } from "#schemas/worlds.js";
 import { WorldSchema } from "#schemas/responses.js";
-
-const MONGO_URI = process.env.MONGO_URI;
-const DB = process.env.DB;
-const mongoclient = new MongoClient(MONGO_URI);
-
-const worlds = mongoclient.db(DB).collection("worlds");
 
 /**
  * @param {import("fastify").FastifyInstance} fastify
  */
 export default async function (fastify, opts) {
+	const worlds = fastify.mongo.db.collection("worlds");
 
 	// DONE
 	fastify.get("/", {
 		schema: {
-			querystring: WorldListGetQuerySchema,
-			response: { 200: WorldSchema.array() }
+			querystring: WorldListGetQuerySchema
 		}
 	}, async function (request, reply) {
 		// "!field,field,!field"
@@ -41,10 +34,7 @@ export default async function (fastify, opts) {
 
 	// DONE
 	fastify.get("/random", {
-		schema: {
-			querystring: WorldRandomGetQuerySchema,
-			response: { 200: WorldSchema.array() } 
-		}
+		schema: { querystring: WorldRandomGetQuerySchema }
 	}, async function (request, reply) {
 		const project = parseProject(request.query["project"]);
 		const sortBy = parseSortBy(request.query["sort_by"]);
@@ -60,12 +50,7 @@ export default async function (fastify, opts) {
 
 	// DONE
 	fastify.get("/search", {
-		schema: {
-			querystring: WorldSearchGetQuerySchema,
-			response: {
-				200: WorldSchema.array()
-			}
-		}
+		schema: { querystring: WorldSearchGetQuerySchema, }
 	}, async function (request, reply) {
 		// TODO: use zod and another tool to sanitize input after validation
 		const query = deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings(request.query["query"]);

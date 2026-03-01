@@ -1,6 +1,5 @@
 "use strict";
 
-import { z } from 'zod/v4';
 import packageJson from '../package.json' with {type: "json"}
 const VERSION = packageJson.version
 const SCRAPER_URI = process.env.SCRAPER_URI;
@@ -10,19 +9,7 @@ const SCRAPER_URI = process.env.SCRAPER_URI;
  * @param {import('fastify').FastifyInstance} fastify  
  */
 export default async function (fastify, opts) {
-  fastify.get("/", {
-    schema: {
-      response: {
-        200: z.object({
-          version: z.string(),
-          scraper: z.object({
-            version: z.string().optional(),
-          }),
-          _message: z.string().optional()
-        })
-      }
-    }
-  }, async function (request, reply) {
+  fastify.get("/", async function (request, reply) {
     var scraperData;
     try {
       const scraper = await fetch(SCRAPER_URI);
