@@ -14,7 +14,7 @@
   },
   "keywords": [],
   "author": "LegitiDevs",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@fastify/autoload": "^6.3.1",
     "@fastify/cors": "^11.2.0",
