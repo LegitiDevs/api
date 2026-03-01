@@ -79,6 +79,10 @@ export const WorldCommentGetParamSchema = z.object({
     comment_uuid: z.uuid()
 })
 
+export const WorldCommentGetQuerySchema = z.object({
+	project: z.string().optional()
+});
+
 export const WorldCommentPostParamSchema = z.object({
 	world_uuid: z.uuid()
 });

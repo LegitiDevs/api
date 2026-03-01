@@ -64,6 +64,7 @@ export default async function (fastify, opts) {
     }, async function (request, reply) {
         const world_uuid = request.params.world_uuid;
         const comment_uuid = request.params.comment_uuid;
+        const project = parseProject(request.query["project"]);
         const result = await worlds
             .aggregate([
                 { $match: { world_uuid, "legitidevs.comments.uuid": comment_uuid } },
@@ -83,7 +84,8 @@ export default async function (fastify, opts) {
                         ]
                     }
                   }
-                }
+                },
+                { $project: project }
             ])
             .toArray();
 
