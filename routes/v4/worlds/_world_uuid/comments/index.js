@@ -1,11 +1,25 @@
 "use strict";
 import "dotenv/config";
-import { parseSortDirection } from "#util/utils.js";
-import { CONFIG } from "#util/config.js";
 import { ApiError } from "#util/errors.js";
-import { WorldCommentListGetParamSchema, WorldCommentListGetQuerySchema, WorldCommentGetParamSchema } from "#schemas/worlds.js";
-import { CommentSchema } from "#schemas/responses.js";
-import { z } from "zod/v4";
+import { WorldCommentListGetParamSchema, WorldCommentListGetQuerySchema, WorldCommentGetParamSchema, WorldCommentPostBodySchema, WorldCommentPostParamSchema, WorldCommentDeleteParamSchema } from "#schemas/worlds.js";
+import { isValidSession, parseProject } from "#util/utils.js";
+import { randomUUID } from "crypto";
+
+function parseSortBy(sortByString = "") {
+	// Expects `+-sort_method`
+	const hasDirection = sortByString[0] != "+" && sortByString[0] != "-";
+
+	const sortDirection = hasDirection ? "+" : sortByString[0];
+	const order = sortDirection == "+" ? -1 : 1;
+
+	const sortMethod = hasDirection ? sortByString : sortByString.slice(1);
+
+	const sortMethods = {
+		default: { date: order },
+	};
+
+	return sortMethods[sortMethod] ?? sortMethods.default;
+}
 
 /**
  * @param {import("fastify").FastifyInstance} fastify
@@ -19,83 +33,27 @@ export default async function (fastify, opts) {
             querystring: WorldCommentListGetQuerySchema
         }
     }, async function (request, reply) {
+        const project = parseProject(request.query["project"])
+        const sortBy = parseSortBy(request.query["sort_by"])
+        const limit = request.query["limit"] ?? null
+        const offset = request.query["offset"] ?? null
+
         const world_uuid = request.params.world_uuid;
-        const page = request.query.page ?? null;
-        const max = request.query.max ?? null;
-        const sortDirection = request.query.sortDirection ?? "ascending";
         
-        const parsedSortDirection = parseSortDirection(sortDirection);
-        const sortAggregateStage = {
-            $project: {
-                _id: 0,
-                "legitidevs.comments": {
-                    $sortArray: {
-                        input: "$legitidevs.comments",
-                        sortBy: { date: parsedSortDirection },
-                    },
-                },
-            },
-        };
-    
-        // Gets all the comments
-        const result = await worlds
-            .aggregate([
-                { $match: { world_uuid } },
-                sortAggregateStage
-            ])
+        const aggregateStages = [
+            { $match: { world_uuid } },
+            { $unwind: "$legitidevs.comments" }, 
+            { $replaceRoot: { newRoot: "$legitidevs.comments" } },
+        ]
+        
+        if (offset !== null) aggregateStages.push({ $skip: offset })
+		if (limit !== null) aggregateStages.push({ $limit: limit })
+
+        aggregateStages.push({ $sort: sortBy }, { $project: project })
+
+        return await worlds
+            .aggregate(aggregateStages)
             .toArray();
-        if (result.length === 0) reply.send(new ApiError(`World ${world_uuid}`, 404));
-        
-        const comments = result[0]?.legitidevs?.comments;
-        if (!comments) return [];
-        
-        if (page !== null) {
-            const pageSize = max ?? CONFIG.V4.WORLDS.COMMENTS.DEFAULT_PAGE_SIZE;
-            
-            // pagination
-            const resultsInPage = await worlds
-                .aggregate([
-                    { $match: { world_uuid } },
-                    sortAggregateStage,
-                    {
-                        $project: {
-                            "legitidevs.comments": {
-                                $slice: [
-                                    "$legitidevs.comments",
-                                    page * pageSize,
-                                    pageSize,
-                                ]
-                            },
-                        },
-                    },
-                ])
-                .toArray();
-    
-            const comments = resultsInPage[0]?.legitidevs?.comments
-            return comments
-        }
-    
-        if (max !== null) {
-            // limits to max
-            const resultsInPage = await worlds
-                .aggregate([
-                    { $match: { world_uuid } },
-                    sortAggregateStage,
-                    {
-                        $project: {
-                            "legitidevs.comments": {
-                                $slice: ["$legitidevs.comments", max],
-                            },
-                        },
-                    },
-                ])
-                .toArray();
-    
-            const comments = resultsInPage[0]?.legitidevs?.comments;
-            return comments;
-        }
-         
-        return comments;
     });
     
     // DONE
@@ -109,31 +67,86 @@ export default async function (fastify, opts) {
         const result = await worlds
             .aggregate([
                 { $match: { world_uuid, "legitidevs.comments.uuid": comment_uuid } },
-                { $project: {
-                    _id: 0,
-                    name: 1,
-                    raw_name: 1,
-                    comment: {
-                        $arrayElemAt: [{
-                            $filter: {
-                                input: "$legitidevs.comments",
-                                as: "comment",
-                                cond: { $eq: ["$$comment.uuid", comment_uuid] },
-                            }
-                        }, 0]
+                { $unwind: "$legitidevs.comments" },
+                {
+                  $replaceRoot: {
+                    newRoot: {
+                        $mergeObjects: [
+                            { 
+                                from: {
+                                    name: "$name", 
+                                    raw_name: "$raw_name", 
+                                    world_uuid: "$world_uuid" 
+                                }
+                            },
+                            "$legitidevs.comments"
+                        ]
                     }
-                }}
+                  }
+                }
             ])
             .toArray();
+
         if (result.length === 0) reply.send(new ApiError(`Comment '${comment_uuid}' not found in world '${world_uuid}'`, 404));
-        const { name, raw_name, comment } = result[0];
-        return { ...comment, from: { world_uuid, name, raw_name } };
+
+        return result[0];
     });
     
-    fastify.post("/", async function (request, reply) {
-        return { _message: "wip" }
+    // Done
+    fastify.post("/", {
+        schema: {
+            params: WorldCommentPostParamSchema,
+            body: WorldCommentPostBodySchema
+        }
+    }, async function (request, reply) {
+        const world_uuid = request.params.world_uuid
+        const profile_uuid = request.body.profile_uuid
+        const content = request.body.content
+
+        const world = await worlds.findOne({ world_uuid });
+        
+        if (!world) return reply.send(new ApiError(`World ${world_uuid}`, 404));
+        if (!(await isValidSession(request.headers["session-token"], profile_uuid))) return reply.send(new ApiError("Unauthorized", 401))
+
+        const comment = { 
+            profile_uuid: profile_uuid, 
+            content: content, 
+            date: Math.floor(Date.now() / 1000), 
+            uuid: randomUUID() 
+        }
+        
+        await worlds.updateOne(
+            { world_uuid },
+            { $push: { "legitidevs.comments": { ...comment } } }
+        );
+        
+        return { ...comment }
     })
-    fastify.delete("/:comment_uuid", async function (request, reply) {
-        return { _message: "wip" }
+
+    // Done
+    fastify.delete("/:comment_uuid", {
+        schema: {
+            params: WorldCommentDeleteParamSchema
+        }
+    }, async function (request, reply) {
+        const world_uuid = request.params.world_uuid
+        const comment_uuid = request.params.comment_uuid
+
+        const comment = await worlds.aggregate([
+            { $match: { world_uuid } },
+            { $unwind: "$legitidevs.comments" }, 
+            { $replaceRoot: { newRoot: "$legitidevs.comments" } },
+            { $match: { uuid: comment_uuid } }
+        ]).toArray();
+        
+        if (!comment[0]) return reply.send(new ApiError(`Comment ${comment_uuid} in World ${world_uuid}`, 404));
+        if (!(await isValidSession(request.headers["session-token"], comment[0].profile_uuid))) return reply.send(new ApiError("Unauthorized", 401))
+
+        await worlds.updateOne(
+            { "legitidevs.comments": { $elemMatch: { uuid: comment_uuid } } },
+            { $pull: { "legitidevs.comments": { uuid: comment_uuid } } }
+        );
+
+        return { removed_uuid: comment_uuid }
     })
 }

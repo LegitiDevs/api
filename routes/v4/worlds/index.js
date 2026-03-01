@@ -1,8 +1,17 @@
 "use strict";
 import "dotenv/config";
-import { defaultFilter, deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings, parseProject, parseSortBy, parseSortingMethod } from "#util/utils.js";
-import { WorldListGetQuerySchema, WorldListSearchGetQuerySchema, WorldListSearchGetParamSchema, WorldRandomGetQuerySchema as WorldRandomGetQuerySchema, WorldSearchGetQuerySchema } from "#schemas/worlds.js";
-import { WorldSchema } from "#schemas/responses.js";
+
+import { 
+	defaultFilter, 
+	parseProject, 
+	parseSortBy 
+} from "#util/utils.js";
+
+import { 
+	WorldListGetQuerySchema,
+	WorldRandomGetQuerySchema, 
+	WorldSearchGetQuerySchema 
+} from "#schemas/worlds.js";
 
 /**
  * @param {import("fastify").FastifyInstance} fastify
@@ -16,7 +25,6 @@ export default async function (fastify, opts) {
 			querystring: WorldListGetQuerySchema
 		}
 	}, async function (request, reply) {
-		// "!field,field,!field"
 		const project = parseProject(request.query["project"])
 		const sortBy = parseSortBy(request.query["sort_by"])
 		const limit = request.query["limit"] ?? null
@@ -50,11 +58,9 @@ export default async function (fastify, opts) {
 
 	// DONE
 	fastify.get("/search", {
-		schema: { querystring: WorldSearchGetQuerySchema, }
+		schema: { querystring: WorldSearchGetQuerySchema }
 	}, async function (request, reply) {
-		// TODO: use zod and another tool to sanitize input after validation
-		const query = deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings(request.query["query"]);
-		console.log(query)
+		const query = request.query["query"]
 		const project = parseProject(request.query["project"]);
 		const sortBy = parseSortBy(request.query["sort_by"]);
 		const limit = request.query["limit"] ?? null;
@@ -70,7 +76,6 @@ export default async function (fastify, opts) {
 		if (limit !== null) aggregateStages.push({ $limit: limit });
 
 		aggregateStages.push({ $sort: sortBy }, { $project: project });
-		console.log(await worlds.aggregate(aggregateStages).toArray());
 		return await worlds.aggregate(aggregateStages).toArray();
 	});
 }

@@ -1,9 +1,8 @@
 "use strict";
 import "dotenv/config";
-import { ApiError, NotFoundError } from "#util/errors.js";
-import { WorldGetParamSchema, WorldPatchBodySchema, WorldPatchHeaderSchema, WorldPatchParamSchema } from "#schemas/worlds.js";
-import { WorldSchema } from "#schemas/responses.js";
-import { isValidSession } from "#util/utils.js";
+import { ApiError } from "#util/errors.js";
+import { WorldGetParamSchema, WorldGetQuerySchema, WorldPatchBodySchema, WorldPatchHeaderSchema, WorldPatchParamSchema } from "#schemas/worlds.js";
+import { isValidSession, parseProject } from "#util/utils.js";
 
 /**
  * @param {import("fastify").FastifyInstance} fastify
@@ -12,14 +11,25 @@ export default async function (fastify, opts) {
 	const worlds = fastify.mongo.db.collection("worlds");
     // DONE
     fastify.get("/", {
-        schema: { params: WorldGetParamSchema }
+        schema: { 
+            params: WorldGetParamSchema,
+            querystring: WorldGetQuerySchema
+        }
     }, async function (request, reply) {
-            const world = await worlds.findOne({ world_uuid: request.params.world_uuid });
-            if (!world) reply.send(new ApiError(`World '${request.params.world_uuid}'`, 404));
-            return world;
+            const project = parseProject(request.query["project"])
+
+            const world = await worlds
+                .find({ world_uuid: request.params.world_uuid })
+                .project(project)
+                .toArray();
+
+            if (!world[0]) return reply.send(new ApiError(`World ${request.params.world_uuid}`, 404));
+
+            return world[0];
         }
     );
 
+    // DONE
     fastify.patch("/", {
         schema: {
             params: WorldPatchParamSchema,
@@ -27,32 +37,20 @@ export default async function (fastify, opts) {
             body: WorldPatchBodySchema
         }
     }, async function (request, reply) {
-        /**
-         * expects:
-         * edit description
-         * edit unlist
-         */
-        
         const world = await worlds.findOne({ world_uuid: request.params.world_uuid });
 
-		if (!world) return reply.send(new NotFoundError(`World ${request.params.world_uuid}`));
+		if (!world) return reply.send(new ApiError(`World ${request.params.world_uuid}`, 404));
 		if (!(await isValidSession(request.headers["session-token"], world.owner_uuid))) return reply.send(new ApiError("Unauthorized", 401))
 
         const edits = request.body.edits
+        const updateObject = { $set: {} }
 
-        /*
-            keep the data put by the user as is.
-            only do basic zod validation checks like checking length and stuff,
-            but dont parse the data whatsoever.
-            zod may do basic checks to see if its a real link or smth,
-            but thats as simple as it can get.
+        for (const key in edits) {
+            updateObject.$set[`legitidevs.${key}`] = edits[key]
+        }
 
-            the client must do the parsing themselves.
-            for example, the description can be a plain string or an snbt text component.
-            the api will not bother to parse it and itll keep it as a string.
-            the client must handle the data themselves to display the correct text.
-        */
+        worlds.updateOne({ world_uuid: request.params.world_uuid }, updateObject);
 
-        return { _message: "WIP: This doesn't actually edit the data yet. Only checks for authorization.", edits }
+        return { edits, world_uuid: world.world_uuid }
     })
 }
