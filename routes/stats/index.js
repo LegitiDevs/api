@@ -6,11 +6,12 @@ const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
 const mongoclient = new MongoClient(MONGO_URI);
 
-const status = mongoclient.db(DB).collection("status");
+const stats = mongoclient.db(DB).collection("stats");
 
 export default async function (fastify, opts) {
-  fastify.get("/uptime", async function (request, reply) {
-    const uptime = await status.findOne({})
-    return uptime
+  fastify.get("/", async function (request, reply) {
+    const all = await stats.find({}, { projection: { _id: 0 }}).toArray();
+    console.log(all)
+    return all;
   });
 }

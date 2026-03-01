@@ -4,7 +4,6 @@ import "dotenv/config";
 import path from "node:path";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import * as checkStatus from "./misc/checkStatus.js";
 
 // Plugins
 import { serializerCompiler, validatorCompiler, jsonSchemaTransform, jsonSchemaTransformObject, hasZodFastifySchemaValidationErrors, isResponseSerializationError } from "fastify-type-provider-zod";
