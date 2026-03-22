@@ -1,12 +1,12 @@
 {
   "name": "api",
-  "version": "3.5.2",
+  "version": "3.6.0",
   "description": "LegitiDevs API",
   "main": "app.js",
   "type": "module",
   "scripts": {
     "start": "fastify start -l info app.js",
-    "dev": "fastify start app.js --log-level debug --pretty-logs"
+    "dev": "nodemon --exec fastify start app.js --log-level debug --pretty-logs"
   },
   "keywords": [],
   "author": "LegitiDevs",
@@ -20,5 +20,8 @@
     "fastify-cli": "^7.4.1",
     "fastify-plugin": "^5.1.0",
     "mongodb": "^6.21.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
