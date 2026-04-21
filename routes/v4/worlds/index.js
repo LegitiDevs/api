@@ -67,9 +67,9 @@ export default async function (fastify, opts) {
 		const offset = request.query["offset"] ?? null;
 
 		if (!query) return [];
-
+		
 		const aggregateStages = [
-			{ $match: { name: { $regex: query, $options: "i" }, ...defaultFilter } }
+			{ $match: { "normalized_name": { $regex: query, $options: "i" }, ...defaultFilter } }
 		];
 
 		if (offset !== null) aggregateStages.push({ $skip: offset });

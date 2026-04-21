@@ -9,7 +9,6 @@ export const CommentSchema = z.object({
 }).meta({ id: "CommentSchema" })
 
 export const WorldSchema = z.object({
-    //_id: z.instanceof(ObjectId).describe("The MongoDB ObjectId of this document. Do not use this, use `world_uuid` instead."),
     creation_date: z.string().optional(),
     creation_date_unix_seconds: z.int().min(0).optional(),
     enforce_whitelist: z.boolean().optional(),
@@ -18,14 +17,14 @@ export const WorldSchema = z.object({
     player_count: z.int().min(0).optional(),
     resource_pack_url: z.union([z.literal(""), z.url()]).optional(),
     world_uuid: z.uuid().optional(),
-    version: z.string().describe("The minecraft version this world is compatible with").optional(), // Mojang does goofy stuff for mc versions so I'm not gonna enforce semver syntax.
+    version: z.string().optional(), // Mojang does goofy stuff for mc versions so I'm not gonna enforce semver syntax.
     visits: z.int().min(0).optional(),
     votes: z.int().min(0).optional(),
     whitelist_on_version_change: z.boolean().optional(),
-    name: z.string().describe("Plaintext representation of the name").optional(),
-    description: z.string().describe("Plaintext representation of the description").optional(),
-    raw_name: z.object().describe("Raw JSON representation of the name").optional(),
-    raw_description: z.array().describe("Raw JSON representation of the description").optional(),
+    name: z.string().optional(),
+    description: z.string().optional(),
+    raw_name: z.object().optional(),
+    raw_description: z.array().optional(),
     icon: z.string().optional(),
     last_scraped: z.int().min(0).optional(),
     max_players: z.int().min(0).optional(),
@@ -37,4 +36,4 @@ export const WorldSchema = z.object({
         unlisted: z.boolean().optional(),
         comments: z.array(CommentSchema).optional()
     }).optional()
-}).meta({ id: "WorldSchema" })
+})
