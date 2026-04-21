@@ -1,9 +1,9 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { isValidSession, validateProperty, wrapper } from "../../../util/utils.js";
-import { CONFIG } from "../../../util/config.js";
-import { TooLongError, WorldNotFoundError, JSONSyntaxError, FormatError, UnauthorizedError } from "../../../util/errors.js";
+import { isValidSession, validateProperty, wrapper } from "#util/utils.js";
+import { CONFIG } from "#util/config.js";
+import { TooLongError, WorldNotFoundError, JSONSyntaxError, FormatError, UnauthorizedError } from "#util/errors.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;

@@ -5,7 +5,7 @@ import {
 	deRegexifyTheRegexSoTheUserDoesntDoMaliciousThings,
 	defaultFilter,
 	parseSortingMethod,
-} from "../../util/utils.js";
+} from "#util/utils.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;

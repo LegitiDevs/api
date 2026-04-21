@@ -1,6 +1,6 @@
 "use strict";
 import "dotenv/config";
-import { standardizeUUID } from "../../util/utils.js";
+import { standardizeUUID } from "#util/utils.js";
 
 const SCRAPER_URI = process.env.SCRAPER_URI;
 

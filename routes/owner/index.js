@@ -1,8 +1,8 @@
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
-import { defaultFilter, parseSortingMethod, isValidSession, validateProperty } from "../../util/utils.js";
-import { CONFIG } from "../../util/config.js";
+import { defaultFilter, parseSortingMethod, isValidSession, validateProperty } from "#util/utils.js";
+import { CONFIG } from "#util/config.js";
 
 const MONGO_URI = process.env.MONGO_URI;
 const DB = process.env.DB;
