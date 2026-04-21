@@ -8,74 +8,29 @@ import {
 } from "#util/utils.js";
 
 import { 
+	WorldGetParamSchema,
+	WorldGetQuerySchema,
 	WorldListGetQuerySchema,
+	WorldPatchBodySchema,
+	WorldPatchHeaderSchema,
+	WorldPatchParamSchema,
 	WorldRandomGetQuerySchema, 
 	WorldSearchGetQuerySchema 
 } from "#schemas/worlds.js";
+import { WorldsController } from "#controllers/v4/worlds.js";
 
 /**
  * @param {import("fastify").FastifyInstance} fastify
  */
 export default async function (fastify, opts) {
 	const worlds = fastify.mongo.db.collection("worlds");
+	const worldsController = new WorldsController(fastify)
 
 	// DONE
-	fastify.get("/", {
-		schema: {
-			querystring: WorldListGetQuerySchema
-		}
-	}, async function (request, reply) {
-		const project = parseProject(request.query["project"])
-		const sortBy = parseSortBy(request.query["sort_by"])
-		const limit = request.query["limit"] ?? null
-		const offset = request.query["offset"] ?? null
-
-		const aggregateStages = [{ $match: defaultFilter }]
-		
-		if (offset !== null) aggregateStages.push({ $skip: offset })
-		if (limit !== null) aggregateStages.push({ $limit: limit })
-
-		aggregateStages.push({ $sort: sortBy }, { $project: project });
-
-		return await worlds.aggregate(aggregateStages).toArray();
-	});
-
+	fastify.get("/", { schema: { querystring: WorldListGetQuerySchema } }, worldsController.listWorlds);
+	fastify.get("/random", { schema: { querystring: WorldRandomGetQuerySchema } }, worldsController.randomWorld);
 	// DONE
-	fastify.get("/random", {
-		schema: { querystring: WorldRandomGetQuerySchema }
-	}, async function (request, reply) {
-		const project = parseProject(request.query["project"]);
-		const sortBy = parseSortBy(request.query["sort_by"]);
-		const limit = request.query["limit"] ?? 1;
-
-		return await worlds.aggregate([
-			{ $match: defaultFilter },
-			{ $sample: { size: limit } },
-			{ $sort: sortBy },
-			{ $project: project },
-		]).toArray()
-	});
-
-	// DONE
-	fastify.get("/search", {
-		schema: { querystring: WorldSearchGetQuerySchema }
-	}, async function (request, reply) {
-		const query = request.query["query"]
-		const project = parseProject(request.query["project"]);
-		const sortBy = parseSortBy(request.query["sort_by"]);
-		const limit = request.query["limit"] ?? null;
-		const offset = request.query["offset"] ?? null;
-
-		if (!query) return [];
-		
-		const aggregateStages = [
-			{ $match: { "normalized_name": { $regex: query, $options: "i" }, ...defaultFilter } }
-		];
-
-		if (offset !== null) aggregateStages.push({ $skip: offset });
-		if (limit !== null) aggregateStages.push({ $limit: limit });
-
-		aggregateStages.push({ $sort: sortBy }, { $project: project });
-		return await worlds.aggregate(aggregateStages).toArray();
-	});
+	fastify.get("/search", {schema: { querystring: WorldSearchGetQuerySchema }}, worldsController.searchWorld);
+	fastify.get("/:world_uuid", { schema: { params: WorldGetParamSchema, querystring: WorldGetQuerySchema } }, worldsController.getWorld);
+	fastify.patch("/:world_uuid", { schema: { params: WorldPatchParamSchema, headers: WorldPatchHeaderSchema, body: WorldPatchBodySchema } }, worldsController.patchWorld);
 }
