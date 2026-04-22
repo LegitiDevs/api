@@ -8,6 +8,12 @@ import {
 } from "#util/utils.js";
 
 import { 
+	WorldCommentDeleteParamSchema,
+	WorldCommentGetParamSchema,
+	WorldCommentListGetParamSchema,
+	WorldCommentListGetQuerySchema,
+	WorldCommentPostBodySchema,
+	WorldCommentPostParamSchema,
 	WorldGetParamSchema,
 	WorldGetQuerySchema,
 	WorldListGetQuerySchema,
@@ -29,8 +35,16 @@ export default async function (fastify, opts) {
 	// DONE
 	fastify.get("/", { schema: { querystring: WorldListGetQuerySchema } }, worldsController.listWorlds);
 	fastify.get("/random", { schema: { querystring: WorldRandomGetQuerySchema } }, worldsController.randomWorld);
-	// DONE
+
+	// NEEDS TESTING
 	fastify.get("/search", {schema: { querystring: WorldSearchGetQuerySchema }}, worldsController.searchWorld);
 	fastify.get("/:world_uuid", { schema: { params: WorldGetParamSchema, querystring: WorldGetQuerySchema } }, worldsController.getWorld);
-	fastify.patch("/:world_uuid", { schema: { params: WorldPatchParamSchema, headers: WorldPatchHeaderSchema, body: WorldPatchBodySchema } }, worldsController.patchWorld);
+	// NEEDS TESTING
+	fastify.patch("/:world_uuid", { schema: { params: WorldPatchParamSchema, headers: WorldPatchHeaderSchema, body: WorldPatchBodySchema } }, worldsController.editWorld);
+
+	// COMMENTS
+	fastify.get("/:world_uuid/comments", { schema: { params: WorldCommentListGetParamSchema, querystring: WorldCommentListGetQuerySchema } }, worldsController.getComments)
+	fastify.get("/comments/:comment_uuid", { schema: { params: WorldCommentGetParamSchema } }, worldsController.getComment)
+	fastify.post("/:world_uuid/comments", { schema: { params: WorldCommentPostParamSchema, body: WorldCommentPostBodySchema } }, worldsController.postComment)
+	fastify.delete("/comments/:comment_uuid", { schema: { params: WorldCommentDeleteParamSchema } }, worldsController.deleteComment)
 }

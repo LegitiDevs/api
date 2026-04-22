@@ -75,7 +75,6 @@ export const WorldCommentListGetQuerySchema = z.object({
 });
 
 export const WorldCommentGetParamSchema = z.object({
-	world_uuid: z.uuid(),
     comment_uuid: z.uuid()
 })
 
@@ -93,7 +92,6 @@ export const WorldCommentPostBodySchema = z.object({
 });
 
 export const WorldCommentDeleteParamSchema = z.object({
-	world_uuid: z.uuid(),
 	comment_uuid: z.uuid(),
 });
 
