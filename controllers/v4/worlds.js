@@ -75,7 +75,8 @@ export class WorldsController {
         const comment_uuid = request.params["comment_uuid"];
         const project = parseProject(request.query["project"]);
 
-        const comment = await this.getComment(request, reply);
+        const comment = await WorldsService.getComment(this.worldsCollection, { comment_uuid, project });
+        if (comment === null) throw new ApiError(`Comment ${comment_uuid}`, 404)
 
         return comment
     }
@@ -85,9 +86,8 @@ export class WorldsController {
         const profile_uuid = request.body["profile_uuid"]
         const content = request.body["content"]
 
-        const world = await WorldsService.getWorld(this.worldsCollection, { world_uuid });
+        const world = this.getWorld(request, reply)
         
-        if (!world) throw new ApiError(`World ${world_uuid}`, 404);
         if (!(await isValidSession(request.headers["session-token"], profile_uuid))) throw new ApiError("Unauthorized", 401)
 
         return await WorldsService.postComment(this.worldsCollection, { world_uuid, profile_uuid, content })
