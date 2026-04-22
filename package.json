@@ -1,6 +1,6 @@
 {
   "name": "api",
-  "version": "4.0.0-alpha11",
+  "version": "4.0.0-alpha12",
   "description": "LegitiDevs API",
   "main": "app.js",
   "type": "module",
