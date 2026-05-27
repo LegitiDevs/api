@@ -1,0 +1,11 @@
+{
+    "extends": "fastify-tsconfig",
+    "compilerOptions": {
+        "outDir": "dist",
+        "rootDir": "src",
+        "rewriteRelativeImportExtensions": true,
+        "allowJs": true,
+        "noEmitOnError": false
+    },
+    "include": ["@types", "src/**/*.ts", "src/**/*.js"]
+}

@@ -1,19 +1,36 @@
 {
   "name": "api",
-  "version": "4.0.0-alpha13",
+  "version": "4.0.0-alpha14",
   "description": "LegitiDevs API",
   "main": "app.js",
   "type": "module",
   "imports": {
-    "#util/*": "./util/*",
-    "#schemas/*": "./schemas/*",
-    "#routes/*": "./routes/*",
-    "#controllers/*": "./controllers/*",
-    "#services/*": "./services/*"
+    "#util/*": {
+      "src": "./src/util/*",
+      "default": "./dist/util/*"
+    },
+    "#schemas/*": {
+      "src": "./src/schemas/*",
+      "default": "./dist/schemas/*"
+    },
+    "#routes/*": {
+      "src": "./src/routes/*",
+      "default": "./dist/routes/*"
+    },
+    "#controllers/*": {
+      "src": "./src/controllers/*",
+      "default": "./dist/controllers/*"
+    },
+    "#services/*": {
+      "src": "./src/services/*",
+      "default": "./dist/services/*"
+    }
   },
   "scripts": {
-    "start": "fastify start -l info app.js",
-    "dev": "fastify start app.js --log-level debug --pretty-logs"
+    "start": "pnpm run build && node dist/server.js",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "dev": "tsx --conditions=src --env-file=.env ./src/server.ts"
   },
   "keywords": [],
   "author": "LegitiDevs",
@@ -24,14 +41,24 @@
     "@fastify/mongodb": "^10.0.0",
     "@fastify/rate-limit": "^10.2.2",
     "@fastify/sensible": "^6.0.4",
+    "close-with-grace": "^2.5.0",
     "dotenv": "^17.3.1",
     "fastify": "^5.7.4",
-    "fastify-cli": "^7.4.1",
     "fastify-plugin": "^5.1.0",
     "fastify-type-provider-zod": "^5.1.0",
-    "mongodb": "^6.21.0",
+    "mongodb": "^7.2.0",
     "zod": "^3.25.76",
     "zod-validation-error": "^3.4.1"
   },
-  "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b"
+  "pnpm": {
+    "overrides": {
+      "mongodb": "^7.2.0"
+    }
+  },
+  "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b",
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "fastify-tsconfig": "^3.0.0",
+    "ts-node": "^10.9.2"
+  }
 }

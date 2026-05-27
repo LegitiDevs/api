@@ -54,3 +54,6 @@ jspm_packages
 *flamegraph*
 
 .env
+
+# typescript compiled stuff
+dist/
