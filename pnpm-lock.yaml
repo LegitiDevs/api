@@ -26,6 +26,9 @@ importers:
       '@fastify/sensible':
         specifier: ^6.0.4
         version: 6.0.4
+      '@fastify/type-provider-typebox':
+        specifier: ^6.1.0
+        version: 6.1.0(typebox@1.1.39)
       close-with-grace:
         specifier: ^2.5.0
         version: 2.5.0
@@ -38,18 +41,12 @@ importers:
       fastify-plugin:
         specifier: ^5.1.0
         version: 5.1.0
-      fastify-type-provider-zod:
-        specifier: ^5.1.0
-        version: 5.1.0(@fastify/swagger@9.5.1)(fastify@5.7.4)(openapi-types@12.1.3)(zod@3.25.76)
       mongodb:
         specifier: ^7.2.0
         version: 7.2.0
-      zod:
-        specifier: ^3.25.76
-        version: 3.25.76
-      zod-validation-error:
-        specifier: ^3.4.1
-        version: 3.5.2(zod@3.25.76)
+      typebox:
+        specifier: ^1.1.39
+        version: 1.1.39
     devDependencies:
       concurrently:
         specifier: ^9.2.1
@@ -100,8 +97,10 @@ packages:
   '@fastify/sensible@6.0.4':
     resolution: {integrity: sha512-1vxcCUlPMew6WroK8fq+LVOwbsLtX+lmuRuqpcp6eYqu6vmkLwbKTdBWAZwbeaSgCfW4tzUpTIHLLvTiQQ1BwQ==}
 
-  '@fastify/swagger@9.5.1':
-    resolution: {integrity: sha512-EGjYLA7vDmCPK7XViAYMF6y4+K3XUy5soVTVxsyXolNe/Svb4nFQxvtuQvvoQb2Gzc9pxiF3+ZQN/iZDHhKtTg==}
+  '@fastify/type-provider-typebox@6.1.0':
+    resolution: {integrity: sha512-k29cOitDRcZhMXVjtRq0+caKxdWoArz7su+dQWGzGWnFG+fSKhevgiZ7nexHWuXOEEQzgJlh6cptIMu69beaTA==}
+    peerDependencies:
+      typebox: ^1.0.13
 
   '@jridgewell/resolve-uri@3.1.2':
     resolution: {integrity: sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==}
@@ -223,15 +222,6 @@ packages:
   create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
 
-  debug@4.4.1:
-    resolution: {integrity: sha512-KcKCqiftBJcZr++7ykoDIEwSa3XWowTfNPo92BYxjXiyYEVrUQh2aLyhxBCwww+heortUFxEJYcRzosstTEBYQ==}
-    engines: {node: '>=6.0'}
-    peerDependencies:
-      supports-color: '*'
-    peerDependenciesMeta:
-      supports-color:
-        optional: true
-
   depd@2.0.0:
     resolution: {integrity: sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==}
     engines: {node: '>= 0.8'}
@@ -277,14 +267,6 @@ packages:
     resolution: {integrity: sha512-TxFM9+MUUM2Ub6chZbP5sPNUFaPWA86kHU0VRd4o9OP6PBP92cj9c4/IEsnLoVHcLgrgXf2GUXWUzkJAO9iKFQ==}
     engines: {node: '>=20.0.0'}
 
-  fastify-type-provider-zod@5.1.0:
-    resolution: {integrity: sha512-IdLEE16XWOkzTskK/onYQ4FLo6zB4/UXxzbZdvskprSAoNAFQoWdjfmSWjWVIDLIn/9Wa6MuKERQC8t7VxFFag==}
-    peerDependencies:
-      '@fastify/swagger': '>=9.5.1'
-      fastify: ^5.0.0
-      openapi-types: ^12.1.3
-      zod: '>=3.25.67'
-
   fastify@5.7.4:
     resolution: {integrity: sha512-e6l5NsRdaEP8rdD8VR0ErJASeyaRbzXYpmkrpr2SuvuMq6Si3lvsaVy5C+7gLanEkvjpMDzBXWE5HPeb/hgTxA==}
 
@@ -324,10 +306,6 @@ packages:
 
   json-schema-ref-resolver@2.0.1:
     resolution: {integrity: sha512-HG0SIB9X4J8bwbxCbnd5FfPEbcXAJYTi1pBJeP/QPON+w8ovSME8iRG+ElHNxZNX2Qh6eYn1GdzJFS4cDFfx0Q==}
-
-  json-schema-resolver@3.0.0:
-    resolution: {integrity: sha512-HqMnbz0tz2DaEJ3ntsqtx3ezzZyDE7G56A/pPY/NGmrPu76UzsWquOpHFRAf5beTNXoH2LU5cQePVvRli1nchA==}
-    engines: {node: '>=20'}
 
   json-schema-traverse@1.0.0:
     resolution: {integrity: sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==}
@@ -384,15 +362,9 @@ packages:
       socks:
         optional: true
 
-  ms@2.1.3:
-    resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
-
   on-exit-leak-free@2.1.2:
     resolution: {integrity: sha512-0eJJY6hXLGf1udHwfNftBqH+g73EU4B504nZeKpz1sYRKafAghwxEJunB2O7rDZkL4PGfsMVnTXZ2EjibbqcsA==}
     engines: {node: '>=14.0.0'}
-
-  openapi-types@12.1.3:
-    resolution: {integrity: sha512-N4YtSYJqghVu4iek2ZUvcN/0aqH1kRDuNqzcycDxhOUpg7GdvLa2F3DgS6yBNhInhv2r/6I0Flkn7CqL8+nIcw==}
 
   pino-abstract-transport@3.0.0:
     resolution: {integrity: sha512-wlfUczU+n7Hy/Ha5j9a/gZNy7We5+cXp8YL+X+PG8S0KXxw7n/JXA3c46Y0zQznIJ83URJiwy7Lh56WLokNuxg==}
@@ -539,6 +511,9 @@ packages:
     resolution: {integrity: sha512-OZs6gsjF4vMp32qrCbiVSkrFmXtG/AZhY3t0iAMrMBiAZyV9oALtXO8hsrHbMXF9x6L3grlFuwW2oAz7cav+Gw==}
     engines: {node: '>= 0.6'}
 
+  typebox@1.1.39:
+    resolution: {integrity: sha512-vj0afVtOfLQvv0GR0VxVagYxsXN64btL7Z9XoaG0ZggH3mruMMkOO6hXdgMsjCY3shZgEvooAWVeznQVs5c43w==}
+
   typescript@6.0.3:
     resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
@@ -570,11 +545,6 @@ packages:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
     engines: {node: '>=10'}
 
-  yaml@2.8.0:
-    resolution: {integrity: sha512-4lLa/EcQCB0cJkyts+FpIRx5G/llPxfP6VQU5KByHEhLxY3IJCH0f0Hy1MHI8sClTvsIb8qwRJ6R/ZdlDJ/leQ==}
-    engines: {node: '>= 14.6'}
-    hasBin: true
-
   yargs-parser@21.1.1:
     resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}
     engines: {node: '>=12'}
@@ -586,15 +556,6 @@ packages:
   yn@3.1.1:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
     engines: {node: '>=6'}
-
-  zod-validation-error@3.5.2:
-    resolution: {integrity: sha512-mdi7YOLtram5dzJ5aDtm1AG9+mxRma1iaMrZdYIpFO7epdKBUwLHIxTF8CPDeCQ828zAXYtizrKlEJAtzgfgrw==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      zod: ^3.25.0
-
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
 
 snapshots:
 
@@ -661,15 +622,9 @@ snapshots:
       type-is: 2.0.1
       vary: 1.1.2
 
-  '@fastify/swagger@9.5.1':
+  '@fastify/type-provider-typebox@6.1.0(typebox@1.1.39)':
     dependencies:
-      fastify-plugin: 5.1.0
-      json-schema-resolver: 3.0.0
-      openapi-types: 12.1.3
-      rfdc: 1.4.1
-      yaml: 2.8.0
-    transitivePeerDependencies:
-      - supports-color
+      typebox: 1.1.39
 
   '@jridgewell/resolve-uri@3.1.2': {}
 
@@ -776,10 +731,6 @@ snapshots:
 
   create-require@1.1.1: {}
 
-  debug@4.4.1:
-    dependencies:
-      ms: 2.1.3
-
   depd@2.0.0: {}
 
   dequal@2.0.3: {}
@@ -814,14 +765,6 @@ snapshots:
   fastify-plugin@5.1.0: {}
 
   fastify-tsconfig@3.0.0: {}
-
-  fastify-type-provider-zod@5.1.0(@fastify/swagger@9.5.1)(fastify@5.7.4)(openapi-types@12.1.3)(zod@3.25.76):
-    dependencies:
-      '@fastify/error': 4.2.0
-      '@fastify/swagger': 9.5.1
-      fastify: 5.7.4
-      openapi-types: 12.1.3
-      zod: 3.25.76
 
   fastify@5.7.4:
     dependencies:
@@ -875,14 +818,6 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
-  json-schema-resolver@3.0.0:
-    dependencies:
-      debug: 4.4.1
-      fast-uri: 3.0.6
-      rfdc: 1.4.1
-    transitivePeerDependencies:
-      - supports-color
-
   json-schema-traverse@1.0.0: {}
 
   light-my-request@6.6.0:
@@ -914,11 +849,7 @@ snapshots:
       bson: 7.2.0
       mongodb-connection-string-url: 7.0.1
 
-  ms@2.1.3: {}
-
   on-exit-leak-free@2.1.2: {}
-
-  openapi-types@12.1.3: {}
 
   pino-abstract-transport@3.0.0:
     dependencies:
@@ -1050,6 +981,8 @@ snapshots:
       media-typer: 1.1.0
       mime-types: 3.0.2
 
+  typebox@1.1.39: {}
+
   typescript@6.0.3: {}
 
   undici-types@7.24.6: {}
@@ -1073,8 +1006,6 @@ snapshots:
 
   y18n@5.0.8: {}
 
-  yaml@2.8.0: {}
-
   yargs-parser@21.1.1: {}
 
   yargs@17.7.2:
@@ -1088,9 +1019,3 @@ snapshots:
       yargs-parser: 21.1.1
 
   yn@3.1.1: {}
-
-  zod-validation-error@3.5.2(zod@3.25.76):
-    dependencies:
-      zod: 3.25.76
-
-  zod@3.25.76: {}

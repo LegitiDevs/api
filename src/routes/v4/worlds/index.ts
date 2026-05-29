@@ -2,40 +2,39 @@
 import "dotenv/config";
 
 import { 
-	WorldCommentDeleteParamSchema,
-	WorldCommentGetParamSchema,
-	WorldCommentListGetParamSchema,
-	WorldCommentListGetQuerySchema,
-	WorldCommentPostBodySchema,
-	WorldCommentPostParamSchema,
-	WorldGetParamSchema,
-	WorldGetQuerySchema,
-	WorldListGetQuerySchema,
-	WorldPatchBodySchema,
-	WorldPatchHeaderSchema,
-	WorldPatchParamSchema,
-	WorldRandomGetQuerySchema, 
-	WorldSearchGetQuerySchema 
+	SchemaGetWorldList, 
+	SchemaGetRandomWorld,
+	SchemaGetWorld,
+	SchemaSearchWorld,
+	SchemaEditWorld,
+	SchemaGetWorldCommentList,
+	SchemaGetWorldComment,
+	SchemaPostComment,
+	SchemaDeleteComment
 } from "../../../schemas/worlds.ts";
 import { WorldsController } from "../../../controllers/v4/worlds.ts";
-import { FastifyInstance, FastifyPluginOptions } from "fastify";
+import { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 
-export default async function (fastify: FastifyInstance, opts: FastifyPluginOptions) {
+// @ts-ignore
+const plugin: FastifyPluginAsyncTypebox = async function (fastify, opts) {
 	const worldsController = new WorldsController(fastify)
 
 	// DONE
-	fastify.get("/", { schema: { querystring: WorldListGetQuerySchema } }, worldsController.listWorlds);
-	fastify.get("/random", { schema: { querystring: WorldRandomGetQuerySchema } }, worldsController.randomWorld);
+	fastify.get("/", { schema: SchemaGetWorldList }, worldsController.listWorlds);
+	fastify.get("/random", { schema: SchemaGetRandomWorld }, worldsController.randomWorld);
+	fastify.get("/search", { schema: SchemaSearchWorld }, worldsController.searchWorld);
+	fastify.get("/:world_uuid", { schema: SchemaGetWorld }, worldsController.getWorld);
 
-	// NEEDS TESTING
-	fastify.get("/search", {schema: { querystring: WorldSearchGetQuerySchema }}, worldsController.searchWorld);
-	fastify.get("/:world_uuid", { schema: { params: WorldGetParamSchema, querystring: WorldGetQuerySchema } }, worldsController.getWorld);
-	// NEEDS TESTING
-	fastify.patch("/:world_uuid", { schema: { params: WorldPatchParamSchema, headers: WorldPatchHeaderSchema, body: WorldPatchBodySchema } }, worldsController.editWorld);
+	// WARNING: NEEDS TESTING - UNSTABLE FOR RELEASE
+	fastify.patch("/:world_uuid", { schema: SchemaEditWorld }, worldsController.editWorld);
 
 	// COMMENTS
-	fastify.get("/:world_uuid/comments", { schema: { params: WorldCommentListGetParamSchema, querystring: WorldCommentListGetQuerySchema } }, worldsController.getComments)
-	fastify.get("/comments/:comment_uuid", { schema: { params: WorldCommentGetParamSchema } }, worldsController.getComment)
-	fastify.post("/:world_uuid/comments", { schema: { params: WorldCommentPostParamSchema, body: WorldCommentPostBodySchema } }, worldsController.postComment)
-	fastify.delete("/comments/:comment_uuid", { schema: { params: WorldCommentDeleteParamSchema } }, worldsController.deleteComment)
+	fastify.get("/:world_uuid/comments", { schema: SchemaGetWorldCommentList }, worldsController.getComments)
+	fastify.get("/comments/:comment_uuid", { schema: SchemaGetWorldComment }, worldsController.getComment)
+
+	// WARNING: NEEDS TESTING - UNSTABLE FOR RELEASE
+	fastify.post("/:world_uuid/comments", { schema: SchemaPostComment }, worldsController.postComment)
+	fastify.delete("/comments/:comment_uuid", { schema: SchemaDeleteComment }, worldsController.deleteComment)
 }
+
+export default plugin

@@ -1,6 +1,8 @@
 import { Collection } from "mongodb";
-import { defaultFilter } from "../../util/utils.ts";
+import { defaultFilter } from "#util/utils.js";
 import { randomUUID } from "crypto"
+
+// TODO: move these inline types to types.ts schema
 
 export async function listWorlds(collection: Collection, { project, sortBy, limit, offset }) {
     const stages = [{ $match: defaultFilter }];
@@ -41,7 +43,7 @@ export async function searchWorld(collection: Collection, { query, project, sort
 	return await collection.aggregate(stages).toArray();
 }
 
-export async function getWorld(collection: Collection, { world_uuid, project }) {
+export async function getWorld(collection: Collection, { world_uuid, project = undefined }: { world_uuid: string, project?: Record<string, number> }) {
     return await collection.findOne({ world_uuid }, { projection: project });
 }
 
@@ -69,7 +71,7 @@ export async function getComments(collection: Collection, { world_uuid, project,
 	return await collection.aggregate(stages).toArray();
 }
 
-export async function getComment(collection: Collection, { comment_uuid, project }) {
+export async function getComment(collection: Collection, { comment_uuid, project = undefined }: { comment_uuid: string, project?: Record<string, number> }) {
     const comments = await collection
         .aggregate([
             { $match: { "legitidevs.comments.uuid": comment_uuid } },

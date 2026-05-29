@@ -1,15 +1,15 @@
-import { z } from "zod/v4";
-import { SortDirectionSchema, SortMethodSchema } from "./worlds.ts";
+import { Type } from "@fastify/type-provider-typebox"
+import { SortDirectionSchema, SortMethodSchema } from "#schemas/worlds.js";
 
-export const ProfileGetParamSchema = z.object({
-    profile_uuid: z.uuid()
-}).meta({ id: "ProfileGetParamSchema" })
+export const ProfileGetParamSchema = Type.Object({
+    profile_uuid: Type.String({ format: "uuid" })
+})
 
-export const ProfileWorldListGetParamSchema = z.object({
-    profile_uuid: z.uuid(),
-}).meta({ id: "ProfileWorldListGetParamSchema" })
+export const ProfileWorldListGetParamSchema = Type.Object({
+    profile_uuid: Type.String({ format: "uuid" }),
+})
 
-export const ProfileWorldListGetQuerySchema = z.object({
-    sortMethod: SortMethodSchema.optional(),
-    sortDirection: SortDirectionSchema.optional()
-}).meta({ id: "ProfileWorldListGetQuerySchema" })
+export const ProfileWorldListGetQuerySchema = Type.Object({
+    sortMethod: Type.Optional(SortMethodSchema),
+    sortDirection: Type.Optional(SortDirectionSchema)
+})

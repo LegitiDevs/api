@@ -1,6 +1,6 @@
 "use strict";
 
-const VERSION = "4.0.0-alpha14";
+const VERSION = "4.0.0-alpha15";
 const SCRAPER_URI = process.env.SCRAPER_URI;
 
 /**
