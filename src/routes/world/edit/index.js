@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";

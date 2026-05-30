@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
@@ -10,13 +12,13 @@ const mongoclient = new MongoClient(MONGO_URI);
 const worlds = mongoclient.db(DB).collection("worlds");
 
 export default async function (fastify, opts) {
-  fastify.get("/:max", async function (request, reply) {
-    const max = request.params.max;
-    const top_worlds = await worlds
-      .find(defaultFilter)
-      .sort({ votes: -1 })
-      .limit(Number.parseInt(max))
-      .toArray();
-    return top_worlds;
-  });
+	fastify.get("/:max", async function (request, reply) {
+		const max = request.params.max;
+		const top_worlds = await worlds
+			.find(defaultFilter)
+			.sort({ votes: -1 })
+			.limit(Number.parseInt(max))
+			.toArray();
+		return top_worlds;
+	});
 }

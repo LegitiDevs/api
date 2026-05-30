@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { randomBytes,createHash } from 'crypto'
 import { ApiError } from '#util/errors.js';
 import { CONFIG } from './config.ts';

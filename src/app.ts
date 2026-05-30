@@ -40,6 +40,7 @@ export default async function (fastify: FastifyInstance, opts: FastifyPluginOpti
 	});
 
 	fastify.setNotFoundHandler({
+		// @ts-ignore
 		preHandler: fastify.rateLimit({
 			max: 10,
 			timeWindow: 1000,

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
@@ -11,20 +13,20 @@ const worlds = mongoclient.db(DB).collection("worlds");
 const PAGE_SIZE = 27; // How many worlds per page to return
 
 export default async function (fastify, opts) {
-  fastify.get("/:index", async function (request, reply) {
-    const index = request.params.index;
-    const skip = Number.parseInt(index) * PAGE_SIZE;
-    const sortingMethod = parseSortingMethod(
-      request.query.sort,
-      request.query.sortDirection
-    );
+	fastify.get("/:index", async function (request, reply) {
+		const index = request.params.index;
+		const skip = Number.parseInt(index) * PAGE_SIZE;
+		const sortingMethod = parseSortingMethod(
+			request.query.sort,
+			request.query.sortDirection,
+		);
 
-    const matched_worlds = await worlds
-      .find(defaultFilter)
-      .sort(sortingMethod)
-      .skip(skip)
-      .limit(PAGE_SIZE)
-      .toArray();
-    return matched_worlds;
-  });
+		const matched_worlds = await worlds
+			.find(defaultFilter)
+			.sort(sortingMethod)
+			.skip(skip)
+			.limit(PAGE_SIZE)
+			.toArray();
+		return matched_worlds;
+	});
 }

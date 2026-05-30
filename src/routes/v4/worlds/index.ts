@@ -11,11 +11,10 @@ import {
 	SchemaGetWorldComment,
 	SchemaPostComment,
 	SchemaDeleteComment
-} from "../../../schemas/worlds.ts";
+} from "#schemas/routes/worlds.js";
 import { WorldsController } from "../../../controllers/v4/worlds.ts";
 import { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 
-// @ts-ignore
 const plugin: FastifyPluginAsyncTypebox = async function (fastify, opts) {
 	const worldsController = new WorldsController(fastify)
 

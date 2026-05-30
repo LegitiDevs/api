@@ -5,7 +5,7 @@ declare global {
       LOG_LEVEL: string;
       FASTIFY_CLOSE_GRACE_DELAY: number;
       MONGO_URI: string;
-      SCRAPER: string;
+      SCRAPER_URI: string;
       DB: string;
     }
   }

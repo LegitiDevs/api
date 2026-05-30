@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
@@ -10,13 +12,13 @@ const mongoclient = new MongoClient(MONGO_URI);
 const worlds = mongoclient.db(DB).collection("worlds");
 
 /**
- * @param {import("fastify").FastifyInstance} fastify  
+ * @param {import("fastify").FastifyInstance} fastify
  */
 export default async function (fastify, opts) {
-  fastify.get("/:uuid", async function (request, reply) {
-    const uuid = request.params.uuid;
-    const uuidHyphenated = standardizeUUID(uuid);
-    const world = await worlds.findOne({ world_uuid: uuidHyphenated });
-    return world;
-  });
+	fastify.get("/:uuid", async function (request, reply) {
+		const uuid = request.params.uuid;
+		const uuidHyphenated = standardizeUUID(uuid);
+		const world = await worlds.findOne({ world_uuid: uuidHyphenated });
+		return world;
+	});
 }

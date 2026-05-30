@@ -17,7 +17,8 @@ import type {
 } from 'fastify';
 import type { RouteGenericInterface } from 'fastify/types/route.d.ts';
 import type { FastifySchema } from 'fastify/types/schema.d.ts';
-import { SchemaGetRandomWorld, SchemaSearchWorld, SchemaGetWorld, SchemaGetWorldList, SchemaGetWorldCommentList, SchemaGetWorldComment, SchemaPostComment, SchemaDeleteComment, SchemaEditWorld } from "#schemas/worlds.js"
+import { SchemaGetRandomWorld, SchemaSearchWorld, SchemaGetWorld, SchemaGetWorldList, SchemaGetWorldCommentList, SchemaGetWorldComment, SchemaPostComment, SchemaDeleteComment, SchemaEditWorld } from "#schemas/routes/worlds.js"
+import { World } from "#schemas/worlds.js"
 
 export type FastifyTypeBox = FastifyInstance<
   RawServerDefault,
@@ -46,10 +47,10 @@ export type FastifyReplyTypeBox<TSchema extends FastifySchema> = FastifyReply<
 >;
 
 export class WorldsController {
-    worldsCollection: Collection
+    worldsCollection: Collection<World>
 
     constructor(fastify: FastifyInstance) {
-        if (fastify.mongo.db == null) throw new Error("DB not found") 
+        if (fastify.mongo.db == null) throw new ApiError("DB not found", 500) 
         this.worldsCollection = fastify.mongo.db.collection("worlds")
     }
 
@@ -58,11 +59,11 @@ export class WorldsController {
         reply: FastifyReplyTypeBox<typeof SchemaGetWorldList>
     ) => {
         const project = parseProject(request.query["project"])
-        const sortBy = parseSortBy(request.query["sort_by"])
-        const limit = request.query["limit"] ?? null
-        const offset = request.query["offset"] ?? null
+        const sort_by = parseSortBy(request.query["sort_by"])
+        const limit = request.query["limit"] ?? undefined
+        const offset = request.query["offset"] ?? undefined
 
-        return await WorldsService.listWorlds(this.worldsCollection, { project, sortBy, limit, offset })
+        return await WorldsService.listWorlds(this.worldsCollection, { project, sort_by, limit, offset })
     }
 
     randomWorld = async (
@@ -70,10 +71,10 @@ export class WorldsController {
         reply: FastifyReplyTypeBox<typeof SchemaGetRandomWorld>
     ) => {
         const project = parseProject(request.query["project"]);
-        const sortBy = parseSortBy(request.query["sort_by"]);
+        const sort_by = parseSortBy(request.query["sort_by"]);
         const limit = request.query["limit"] ?? 1;
 
-        return await WorldsService.randomWorld(this.worldsCollection, { project, sortBy, limit })
+        return await WorldsService.randomWorld(this.worldsCollection, { project, sort_by, limit })
     }
 
     searchWorld = async (
@@ -82,11 +83,11 @@ export class WorldsController {
     ) => {
         const query = request.query["query"]
 		const project = parseProject(request.query["project"]);
-		const sortBy = parseSortBy(request.query["sort_by"]);
-		const limit = request.query["limit"] ?? null;
-		const offset = request.query["offset"] ?? null;
+		const sort_by = parseSortBy(request.query["sort_by"]);
+		const limit = request.query["limit"] ?? undefined;
+		const offset = request.query["offset"] ?? undefined;
 
-        return await WorldsService.searchWorld(this.worldsCollection, { query, project, sortBy, limit, offset })
+        return await WorldsService.searchWorld(this.worldsCollection, { query, project, sort_by, limit, offset })
     }
 
     getWorld = async (
@@ -125,13 +126,13 @@ export class WorldsController {
         reply: FastifyReplyTypeBox<typeof SchemaGetWorldCommentList>
     ) => {
         const project = parseProject(request.query["project"])
-        const sortBy = parseSortBy(request.query["sort_by"])
-        const limit = request.query["limit"] ?? null
-        const offset = request.query["offset"] ?? null
+        const sort_by = parseSortBy(request.query["sort_by"])
+        const limit = request.query["limit"] ?? undefined
+        const offset = request.query["offset"] ?? undefined
 
         const world_uuid = request.params["world_uuid"];
 
-        return await WorldsService.getComments(this.worldsCollection, { world_uuid, project, sortBy, limit, offset })
+        return await WorldsService.getComments(this.worldsCollection, { world_uuid, project, sort_by, limit, offset })
     }
 
     getComment = async (

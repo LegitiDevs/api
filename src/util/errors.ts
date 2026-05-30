@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 export class ApiError extends Error {
 	constructor(message, statusCode) {
 		const _message = `(${statusCode}) ${message}`;

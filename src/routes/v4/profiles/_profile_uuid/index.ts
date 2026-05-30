@@ -1,14 +1,14 @@
 "use strict";
 import "dotenv/config";
-import { MongoClient } from "mongodb";
 import { ProfileGetParamSchema, ProfileWorldListGetParamSchema, ProfileWorldListGetQuerySchema } from "#schemas/profiles.js";
-import { z } from "zod/v4";
-import { WorldSchema } from "#schemas/responses.js";
 import { defaultFilter, parseSortingMethod } from "#util/utils.js";
-import { FastifyInstance, FastifyPluginOptions } from "fastify";
+import { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
+import { ApiError } from "#util/errors.js";
 
-export default async function (fastify: FastifyInstance, opts: FastifyPluginOptions) {
+const plugin: FastifyPluginAsyncTypebox = async function (fastify, opts) {
+  if (fastify.mongo.db == null) throw new ApiError("DB not found", 500) 
 	const worlds = fastify.mongo.db.collection("worlds");
+  // @ts-ignore
 	const profiles = fastify.mongo.db.collection("profiles");
 
   fastify.get("/", {
@@ -37,3 +37,5 @@ export default async function (fastify: FastifyInstance, opts: FastifyPluginOpti
     return { _message: "wip" }
   });
 }
+
+export default plugin

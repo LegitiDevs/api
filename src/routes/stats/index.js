@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 "use strict";
 import "dotenv/config";
 import { MongoClient } from "mongodb";
@@ -9,9 +11,9 @@ const mongoclient = new MongoClient(MONGO_URI);
 const stats = mongoclient.db(DB).collection("stats");
 
 export default async function (fastify, opts) {
-  fastify.get("/", async function (request, reply) {
-    const all = await stats.find({}, { projection: { _id: 0 }}).toArray();
-    console.log(all)
-    return all;
-  });
+	fastify.get("/", async function (request, reply) {
+		const all = await stats.find({}, { projection: { _id: 0 } }).toArray();
+		console.log(all);
+		return all;
+	});
 }

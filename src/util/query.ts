@@ -1,4 +1,8 @@
+// @ts-nocheck
+
 import { ApiError } from "#util/errors.js";
+
+// TODO: move entire util folder to fastify plugins
 
 export function parseProject(projectString = "") {
     // Expects `field1,field2,!field3,!field4`
@@ -22,11 +26,11 @@ export function parseProject(projectString = "") {
 }
 
 const SORT_METHODS = {
-    default: (d) => ({ locked: d, player_count: d, votes: d }),
-    votes: (d) => ({ votes: d }),
-    visits: (d) => ({ visits: d }),
-    recently_scraped: (d) => ({ last_scraped: d }),
-    recently_created: (d) => ({ creation_date_unix_seconds: d }),
+    default: d => ({ locked: d, player_count: d, votes: d }),
+    votes: d => ({ votes: d }),
+    visits: d => ({ visits: d }),
+    recently_scraped: d => ({ last_scraped: d }),
+    recently_created: d => ({ creation_date_unix_seconds: d }),
 };
 
 export function parseSortBy(sortByString = "") {

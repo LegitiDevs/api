@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 export const CONFIG = {
     MAX_ACCESS_TOKEN_LENGTH: 64,
     MAX_UUID_LENGTH: 64,

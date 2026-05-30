@@ -1,5 +1,16 @@
 import { Type } from "@fastify/type-provider-typebox"
-import { SortDirectionSchema, SortMethodSchema } from "#schemas/worlds.js";
+
+const SortMethodSchema = Type.Union([
+    Type.Literal("default"), 
+    Type.Literal("votes"),
+    Type.Literal("visits"),
+    Type.Literal("recently_scraped"),
+    Type.Literal("recently_created"),
+])
+const SortDirectionSchema = Type.Union([
+    Type.Literal("ascending"),
+    Type.Literal("descending"),
+])
 
 export const ProfileGetParamSchema = Type.Object({
     profile_uuid: Type.String({ format: "uuid" })
