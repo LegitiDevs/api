@@ -7,8 +7,8 @@ import { DeleteCommentOptions, EditWorldOptions, GetCommentOptions, GetCommentsO
 export async function listWorlds(collection: Collection<World>, { project, sort_by, limit, offset }: ListWorldsOptions) {
     const stages: Document[] = [{ $match: defaultFilter }];
 
-    if (offset !== null) stages.push({ $skip: offset })
-	if (limit !== null) stages.push({ $limit: limit })
+    if (offset !== undefined) stages.push({ $skip: offset })
+	if (limit !== undefined) stages.push({ $limit: limit })
 
 	stages.push({ $sort: sort_by }, { $project: project });
 	return await collection.aggregate(stages).toArray();
@@ -30,8 +30,8 @@ export async function searchWorld(collection: Collection<World>, { query, projec
 		{ $match: { $text: { $search: `"${query}"` }, ...defaultFilter } }
 	];  
 
-	if (offset !== null) stages.push({ $skip: offset });
-	if (limit !== null) stages.push({ $limit: limit });
+	if (offset !== undefined) stages.push({ $skip: offset });
+	if (limit !== undefined) stages.push({ $limit: limit });
 
 	stages.push(
         { $sort: sort_by }, 
@@ -63,8 +63,8 @@ export async function getComments(collection: Collection<World>, { world_uuid, p
 		{ $replaceRoot: { newRoot: "$legitidevs.comments" } },
 	];
 
-	if (offset !== null) stages.push({ $skip: offset });
-	if (limit !== null) stages.push({ $limit: limit });
+	if (offset !== undefined) stages.push({ $skip: offset });
+	if (limit !== undefined) stages.push({ $limit: limit });
 
 	stages.push({ $sort: sort_by }, { $project: project });
 

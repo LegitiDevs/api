@@ -10,8 +10,26 @@ import Fastify from "fastify";
 import closeWithGrace from "close-with-grace";
 
 // Instantiate Fastify with some config
+function getLoggerOptions () {
+  // Only if the program is running in an interactive terminal
+  if (process.stdout.isTTY) {
+    return {
+      level: 'info',
+      transport: {
+        target: 'pino-pretty',
+        options: {
+          translateTime: 'HH:MM:ss Z',
+          ignore: 'pid,hostname'
+        }
+      }
+    }
+  }
+
+  return { level: process.env.LOG_LEVEL ?? 'silent' }
+}
+
 const app = Fastify({
-	logger: true,
+	logger: getLoggerOptions(),
 });
 
 // Register your application as a normal plugin.
