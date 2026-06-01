@@ -13,4 +13,8 @@ export default async function (fastify, opts) {
     const all = await stats.find({}, { projection: { _id: 0 }}).toArray();
     return all;
   });
+  fastify.get("/:uuid", async function (request, reply) {
+    const all = await stats.findOne({ "world_uuid": request.params.uuid }, { projection: { _id: 0 }});
+    return all;
+ });
 }
