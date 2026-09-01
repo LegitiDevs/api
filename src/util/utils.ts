@@ -15,7 +15,7 @@ const profiles = mongoclient.db(DB).collection("profiles");
 export function parseProject(projectString = "") {
     // Expects `field1,field2,!field3,!field4`
     const fields = projectString.split(",").filter(Boolean);
-    
+
     if (fields.length === 0) return { _id: 0 };
 
     const hasExclusion = fields[0].startsWith("!");
@@ -23,7 +23,7 @@ export function parseProject(projectString = "") {
     const project = Object.fromEntries(
         fields.map(field => {
             const isExclusion = field.startsWith("!");
-            if (isExclusion !== hasExclusion) 
+            if (isExclusion !== hasExclusion)
                 throw new ApiError("Cannot combine exclusion and inclusion on projection.", 400);
             return isExclusion ? [field.slice(1), 0] : [field, 1];
         })
@@ -72,10 +72,8 @@ const SORTING_METHOD_LOOKUP = {
 };
 
 export const defaultFilter = {
-	$or: [
-		{ "legitidevs.unlisted": false },
-		{ "legitidevs.unlisted": { $exists: false } },
-	],
+  "legitidevs.unlisted": { $ne: true },
+  "legitidevs.deleted": { $ne: true },
 };
 
 export const parseSortDirection = (sortDirection) => {
@@ -147,7 +145,7 @@ export const isRefreshTokenExpired = async (profile_uuid) => {
 /**
  * Compares the session tokens of the provided profile uuid and the provided session token to check if the user has a valid session.
  * @param {string} sessionToken The session token provided by the client.
- * @param {string} profile_uuid The profile uuid provided by the client. 
+ * @param {string} profile_uuid The profile uuid provided by the client.
  * @returns {Promise<boolean>}
  */
 export const isValidSession = async (sessionToken, profile_uuid) => {
@@ -161,7 +159,7 @@ export const isValidSession = async (sessionToken, profile_uuid) => {
 /**
  * Compares the refresh tokens of the provided profile uuid and the provided refresh token to check if the user has a valid refresh token.
  * @param {string} sessionToken The refresh token provided by the client.
- * @param {string} profile_uuid The profile uuid provided by the client. 
+ * @param {string} profile_uuid The profile uuid provided by the client.
  * @returns {Promise<boolean>}
  */
 export const isValidRefreshToken = async (refreshToken, profile_uuid) => {
