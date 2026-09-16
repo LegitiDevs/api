@@ -16,7 +16,7 @@ To get started with the project, follow these steps:
 2. Run the following commands
 ```
 cd api
-npm install
+pnpm install
 ```
 
 ---
