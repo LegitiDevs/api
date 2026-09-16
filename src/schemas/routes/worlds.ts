@@ -1,7 +1,7 @@
 import { Type } from "@fastify/type-provider-typebox"
 import { SessionTokenSchema } from "#schemas/auth.js";
 import { DeleteCommentOptionsSchema, EditWorldOptionsSchema, GetCommentOptionsSchema, GetCommentsOptionsSchema, GetWorldOptionsSchema, ListOptionsSchema, PostCommentOptionsSchema, RandomWorldOptionsSchema, SearchWorldOptionsSchema } from "#schemas/services/worlds.js";
-import { WorldSortBySchema } from "#schemas/worlds.js";
+import { WorldFilterSchema, WorldSortBySchema } from "#schemas/worlds.js";
 
 // TODO: move regex checking logic to the controller, not the schema
 
@@ -20,6 +20,17 @@ export const SchemaGetWorldList = {
             project: Type.String(),
         }))
     ])
+}
+
+export const SchemaFilterWorldList = { 
+    querystring: Type.Intersect([
+        Type.Omit(ListOptionsSchema, ['sort_by', 'project']),
+        Type.Partial(Type.Object({
+            sort_by: WorldSortBySchema,
+            project: Type.String(),
+        })),
+    ]),
+    body: WorldFilterSchema
 }
 
 export const SchemaGetRandomWorld = {

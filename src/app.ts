@@ -10,6 +10,7 @@ import FastifyCors from "@fastify/cors";
 import FastifyRateLimit from "@fastify/rate-limit";
 import FastifyAutoLoad from "@fastify/autoload";
 import FastifyMongoDB from "@fastify/mongodb";
+import LegitiDevsScraperPlugin from "./plugins/legitidevs_scraper_plugin.ts"
 
 // Types
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
@@ -32,6 +33,9 @@ export default async function (fastify: FastifyInstance, opts: FastifyPluginOpti
 		url: process.env.MONGO_URI,
 		database: process.env.DB,
 	});
+	await fastify.register(LegitiDevsScraperPlugin, {
+		scraper_uri: process.env.SCRAPER_URI
+	})
 
 	await fastify.register(FastifyAutoLoad, {
 		dir: path.join(__dirname, "routes"),
