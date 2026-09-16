@@ -2,14 +2,13 @@
 
 import { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 
-const VERSION = "4.0.0-alpha15";
-const SCRAPER_URI = process.env.SCRAPER_URI;
+const VERSION = "4.0.0-alpha16";
 
 const plugin: FastifyPluginAsyncTypebox = async function (fastify, opts) {
   fastify.get("/", async function (request, reply) {
-    var scraperData;
+    let scraperData;
     try {
-      const scraper = await fetch(SCRAPER_URI);
+      const scraper = await fastify.legitidevs_scraper.fetch('');
       scraperData = await scraper.json();
     } catch (e) {
       scraperData = {};
