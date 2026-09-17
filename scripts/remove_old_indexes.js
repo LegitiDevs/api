@@ -11,6 +11,7 @@ async function run() {
 
         const indexes_to_remove = [
             'name_text', // Removed in API v4
+            'last_scraped_ms'
         ]
 
         const indexes = await worlds.indexes()
