@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import { Static, Type } from "@fastify/type-provider-typebox";
 import "#schemas/formats.js"
 
@@ -45,7 +44,6 @@ export const JamSchema = Type.Partial(Type.Object({
 export const LegitiDevsSchema = Type.Partial(Type.Object({}))
 
 export const WorldSchema = Type.Object({
-    _id: Type.Optional(ObjectId),
     // Main info
     name: Type.String(),
     icon: Type.String(),

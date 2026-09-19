@@ -1,15 +1,14 @@
-// "use strict";
-// import "dotenv/config";
+"use strict";
+import "dotenv/config";
 
-// import { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
+import { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
+import { StatsController } from "#controllers/v4/stats.js";
+import { SchemaGetServerStats } from "#schemas/routes/stats.js";
 
-// const plugin: FastifyPluginAsyncTypebox = async function (fastify, opts) {
-//     const statsController = new StatsController(fastify)
+const plugin: FastifyPluginAsyncTypebox = async function (fastify, opts) {
+    const statsController = new StatsController(fastify)
 
-//     // WIP
-//     fastify.get("/stats", { schema: X }, statsController.listWorldsStats);
-//     fastify.get("/:world_uuid/stats", { schema: X }, statsController.getWorldStats);
+    fastify.get("/", { schema: SchemaGetServerStats }, statsController.getServerStats);
+}
 
-// }
-
-// export default plugin
+export default plugin
