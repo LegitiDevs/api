@@ -11,7 +11,7 @@ async function run() {
 
         const indexes_to_remove = [
             'name_text', // Removed in API v4
-            'last_scraped_ms'
+            'last_scraped_ms' // Reworked in Bot v3
         ]
 
         const indexes = await worlds.indexes()

@@ -27,10 +27,9 @@
     }
   },
   "scripts": {
-    "start": "pnpm run build && node dist/server.js",
+    "start": "node dist/server.js",
     "build": "tsc",
-    "watch": "tsc -w",
-    "dev": "tsx --conditions=src --env-file=.env ./src/server.ts"
+    "build:start": "pnpm run build && node dist/server.js"
   },
   "keywords": [],
   "author": "LegitiDevs",
