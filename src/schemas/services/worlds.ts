@@ -1,9 +1,10 @@
-import { NaturalNumberSchema, UuidSchema, WholeNumberSchema } from "#schemas/generic.js"
+import { NaturalNumberSchema, WholeNumberSchema } from "#schemas/generic.js"
 import { Static, Type } from "@fastify/type-provider-typebox"
 import { ProjectSchema, SortBySchema } from "./generic.ts"
+import { WorldUuidSchema } from "#schemas/worlds.js"
 
 export const GetWorldOptionsSchema = Type.Object({
-    world_uuid: UuidSchema,
+    world_uuid: WorldUuidSchema,
     project: Type.Optional(ProjectSchema),
 })
 

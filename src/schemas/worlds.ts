@@ -43,6 +43,8 @@ export const JamSchema = Type.Partial(Type.Object({
 
 export const LegitiDevsSchema = Type.Partial(Type.Object({}))
 
+export const WorldUuidSchema = Type.Union([UuidSchema, Type.Literal("lobby")])
+
 export const WorldSchema = Type.Object({
     // Main info
     name: Type.String(),
@@ -57,7 +59,7 @@ export const WorldSchema = Type.Object({
     owner_uuid: UuidSchema,
 
     // World metadata
-    world_uuid: UuidSchema,
+    world_uuid: WorldUuidSchema,
     creation_date: Type.String(),
     creation_date_unix_seconds: UnixTimestampSchema,
     enforce_whitelist: Type.Boolean(),

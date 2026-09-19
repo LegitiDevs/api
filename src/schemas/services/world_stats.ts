@@ -1,6 +1,6 @@
-import { UuidSchema } from "#schemas/generic.js";
 import Type, { Static } from "typebox";
 import { ProjectSchema } from "./generic.ts";
+import { WorldUuidSchema } from "#schemas/worlds.js";
 
 
 export const GetWorldListStatsOptionsSchema = Type.Object({
@@ -8,7 +8,7 @@ export const GetWorldListStatsOptionsSchema = Type.Object({
 })
 
 export const GetWorldStatsOptionsSchema = Type.Object({
-    world_uuid: UuidSchema,
+    world_uuid: WorldUuidSchema,
     project: Type.Optional(ProjectSchema),
 })
 
