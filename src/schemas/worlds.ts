@@ -13,6 +13,17 @@ import {
     WholeNumberSchema
 } from "#schemas/generic.js";
 
+
+export const WorldSortMethodsEnum = Type.Union([
+    Type.Literal("default"),
+    Type.Literal("votes"),
+    Type.Literal("visits"),
+    Type.Literal("recently_scraped"),
+    Type.Literal("recently_created")
+])
+
+export const WorldSortBySchema = Type.String({ format: 'world-sort-by-parameter' })
+
 export const JamScoreSchema = Type.Object({
     rank: Type.Integer({ minimum: 1 }),
     score: Type.Number({ minimum: 0 }),
@@ -79,11 +90,14 @@ export const WorldSchema = Type.Object({
 })
 export type World = Static<typeof WorldSchema>
 
-export const WorldSortMethodsEnum = Type.Union([
-    Type.Literal("default"),
-    Type.Literal("votes"),
-    Type.Literal("visits"),
-    Type.Literal("recently_scraped"),
-    Type.Literal("recently_created")
-])
-export const WorldSortBySchema = Type.String({ format: 'world-sort-by-parameter' })
+export const WorldStatsEntrySchema = Type.Object({
+    timestamp: UnixTimestampSchema,
+    visits: Type.Index(WorldSchema, ['visits']),
+    votes: Type.Index(WorldSchema, ['votes'])
+})
+
+export const WorldStatsSchema = Type.Object({
+    world_uuid: UuidSchema,
+    stats: Type.Array(WorldStatsEntrySchema)
+})
+export type WorldStats = Static<typeof WorldStatsSchema>

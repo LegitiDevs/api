@@ -3,7 +3,6 @@ import { World } from "#schemas/worlds.js";
 import { GetWorldOptions, ListWorldsOptions, RandomWorldOptions, SearchWorldOptions } from "#schemas/services/worlds.js";
 
 export const WORLDS_DEFAULT_FILTER = {
-  "legitidevs.unlisted": { $ne: true },
   "legitidevs.deleted": { $ne: true },
 };
 
