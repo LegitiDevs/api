@@ -11,7 +11,10 @@ export async function listPlayers(fastify: FastifyInstance, { project, sort_by, 
 
     const players = await response.json()
 
-    const stages: Document[] = [{ $documents: players }, { $sort: sort_by }];
+    const stages: Document[] = [
+        { $documents: players }, 
+        { $sort: sort_by }
+    ];
     
     if (offset !== undefined) stages.push({ $skip: offset })
     if (limit !== undefined) stages.push({ $limit: limit })

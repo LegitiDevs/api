@@ -7,12 +7,15 @@ export const WORLDS_DEFAULT_FILTER = {
 };
 
 export async function listWorlds(collection: Collection<World>, { project, sort_by, limit, offset }: ListWorldsOptions) {
-    const stages: Document[] = [{ $match: WORLDS_DEFAULT_FILTER }];
+    const stages: Document[] = [
+        { $match: WORLDS_DEFAULT_FILTER }, 
+        { $sort: sort_by }
+    ];
 
     if (offset !== undefined) stages.push({ $skip: offset })
 	if (limit !== undefined) stages.push({ $limit: limit })
 
-	stages.push({ $sort: sort_by }, { $project: project });
+	stages.push({ $project: project });
 	return await collection.aggregate(stages).toArray();
 }
 
@@ -31,14 +34,14 @@ export async function searchWorld(collection: Collection<World>, { query, projec
     const sanitized_query = query.replaceAll(/[-"]/g,'')
 	
 	const stages: Document[] = [
-		{ $match: { $text: { $search: sanitized_query }, ...WORLDS_DEFAULT_FILTER } }
+		{ $match: { $text: { $search: sanitized_query }, ...WORLDS_DEFAULT_FILTER } },
+        { $sort: sort_by }
 	];  
 
 	if (offset !== undefined) stages.push({ $skip: offset });
 	if (limit !== undefined) stages.push({ $limit: limit });
 
 	stages.push(
-        { $sort: sort_by }, 
         { $project: project }
     );
 
@@ -50,11 +53,14 @@ export async function getWorld(collection: Collection<World>, { world_uuid, proj
 }
 
 export async function getWorldsFromPlayer(collection: Collection<World>, { player_uuid, project, sort_by, limit, offset }: GetWorldsFromPlayerOptions) {
-    const stages: Document[] = [{ $match: {...WORLDS_DEFAULT_FILTER, owner_uuid: player_uuid} }];
+    const stages: Document[] = [
+        { $match: {...WORLDS_DEFAULT_FILTER, owner_uuid: player_uuid} }, 
+        { $sort: sort_by }
+    ];
 
     if (offset !== undefined) stages.push({ $skip: offset })
 	if (limit !== undefined) stages.push({ $limit: limit })
 
-	stages.push({ $sort: sort_by }, { $project: project });
+	stages.push({ $project: project });
 	return await collection.aggregate(stages).toArray();
 }

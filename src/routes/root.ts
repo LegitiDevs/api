@@ -2,7 +2,7 @@
 
 import { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 
-const VERSION = "4.0.0-alpha18";
+const VERSION = "4.0.0-alpha19";
 
 const plugin: FastifyPluginAsyncTypebox = async function (fastify, opts) {
   fastify.get("/", async function (request, reply) {
