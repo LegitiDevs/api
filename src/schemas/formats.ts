@@ -1,6 +1,7 @@
 import { Format, TSchema } from "@fastify/type-provider-typebox"
 import { Value } from "typebox/value"
 import { WorldSortMethodsEnum } from "#schemas/worlds.js";
+import { PlayerSortMethodsEnum } from "./players.ts";
 
 function checkSortByParameter(schema: TSchema, value: string): boolean {
     if (value.startsWith("+") || value.startsWith("-")) {
@@ -11,4 +12,8 @@ function checkSortByParameter(schema: TSchema, value: string): boolean {
 
 Format.Set('world-sort-by-parameter', value => {
     return checkSortByParameter(WorldSortMethodsEnum, value)
+})
+
+Format.Set('player-sort-by-parameter', value => {
+    return checkSortByParameter(PlayerSortMethodsEnum, value)
 })

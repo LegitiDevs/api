@@ -1,4 +1,4 @@
-import { NaturalNumberSchema, WholeNumberSchema } from "#schemas/generic.js"
+import { NaturalNumberSchema, UuidSchema, WholeNumberSchema } from "#schemas/generic.js"
 import { Static, Type } from "@fastify/type-provider-typebox"
 import { ProjectSchema, SortBySchema } from "./generic.ts"
 import { WorldUuidSchema } from "#schemas/worlds.js"
@@ -17,6 +17,13 @@ export const ListWorldsOptionsSchema = Type.Partial(
     })
 )
 
+export const GetWorldsFromPlayerOptionsSchema = Type.Intersect([
+    ListWorldsOptionsSchema,
+    Type.Object({
+        player_uuid: UuidSchema
+    })
+])
+
 export const RandomWorldOptionsSchema = Type.Omit(ListWorldsOptionsSchema, Type.Union([
     Type.Literal("offset")
 ]))
@@ -30,5 +37,6 @@ export const SearchWorldOptionsSchema = Type.Intersect([
 
 export type GetWorldOptions = Static<typeof GetWorldOptionsSchema>
 export type ListWorldsOptions = Static<typeof ListWorldsOptionsSchema>
+export type GetWorldsFromPlayerOptions = Static<typeof GetWorldsFromPlayerOptionsSchema>
 export type RandomWorldOptions = Static<typeof RandomWorldOptionsSchema>
 export type SearchWorldOptions = Static<typeof SearchWorldOptionsSchema>

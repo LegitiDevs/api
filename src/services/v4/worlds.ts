@@ -1,6 +1,6 @@
 import { Collection, Document } from "mongodb";
 import { World } from "#schemas/worlds.js";
-import { GetWorldOptions, ListWorldsOptions, RandomWorldOptions, SearchWorldOptions } from "#schemas/services/worlds.js";
+import { GetWorldOptions, GetWorldsFromPlayerOptions, ListWorldsOptions, RandomWorldOptions, SearchWorldOptions } from "#schemas/services/worlds.js";
 
 export const WORLDS_DEFAULT_FILTER = {
   "legitidevs.deleted": { $ne: true },
@@ -47,4 +47,16 @@ export async function searchWorld(collection: Collection<World>, { query, projec
 
 export async function getWorld(collection: Collection<World>, { world_uuid, project }: GetWorldOptions) {
     return await collection.findOne({ world_uuid }, { projection: project });
+}
+
+export async function getWorldsFromPlayer(collection: Collection<World>, { player_uuid, project, sort_by, limit, offset }: GetWorldsFromPlayerOptions) {
+    const stages: Document[] = [{ $match: {...WORLDS_DEFAULT_FILTER, owner_uuid: player_uuid} }];
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+    console.log({ $match: {...WORLDS_DEFAULT_FILTER, owner_uuid: player_uuid} })
+
+    if (offset !== undefined) stages.push({ $skip: offset })
+	if (limit !== undefined) stages.push({ $limit: limit })
+
+	stages.push({ $sort: sort_by }, { $project: project });
+	return await collection.aggregate(stages).toArray();
 }

@@ -1,4 +1,4 @@
-import { parseProject, parseSortBy } from "#util/query.js"
+import { parseProject, parseWorldSortBy } from "#util/query.js"
 import * as WorldsService from "#services/v4/worlds.js"
 import { ApiError } from "#util/errors.js"
 import { Collection } from "mongodb"
@@ -21,7 +21,7 @@ export class WorldsController {
         reply: FastifyReplyTypeBox<typeof SchemaGetWorldList>
     ) => {
         const project = parseProject(request.query["project"])
-        const sort_by = parseSortBy(request.query["sort_by"])
+        const sort_by = parseWorldSortBy(request.query["sort_by"])
         const limit = request.query["limit"] ?? undefined
         const offset = request.query["offset"] ?? undefined
 
@@ -33,7 +33,7 @@ export class WorldsController {
         reply: FastifyReplyTypeBox<typeof SchemaGetRandomWorld>
     ) => {
         const project = parseProject(request.query["project"]);
-        const sort_by = parseSortBy(request.query["sort_by"]);
+        const sort_by = parseWorldSortBy(request.query["sort_by"]);
         const limit = request.query["limit"] ?? 1;
 
         return await WorldsService.randomWorld(this.worldsCollection, { project, sort_by, limit })
@@ -45,7 +45,7 @@ export class WorldsController {
     ) => {
         const query = request.query["query"]
 		const project = parseProject(request.query["project"]);
-		const sort_by = parseSortBy(request.query["sort_by"]);
+		const sort_by = parseWorldSortBy(request.query["sort_by"]);
 		const limit = request.query["limit"] ?? undefined;
 		const offset = request.query["offset"] ?? undefined;
 

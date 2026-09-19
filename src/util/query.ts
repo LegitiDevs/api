@@ -25,7 +25,9 @@ export function parseProject(projectString = "") {
     return project;
 }
 
-const SORT_METHODS = {
+// rly need to clean this up
+
+const WORLD_SORT_METHODS = {
     default: d => ({ locked: d, player_count: d, votes: d }),
     votes: d => ({ votes: d }),
     visits: d => ({ visits: d }),
@@ -33,11 +35,27 @@ const SORT_METHODS = {
     recently_created: d => ({ creation_date_unix_seconds: d }),
 };
 
-export function parseSortBy(sortByString = "") {
+export function parseWorldSortBy(sortByString = "") {
     const hasPrefix = sortByString[0] === "+" || sortByString[0] === "-";
     const direction = !hasPrefix || sortByString[0] === "+" ? -1 : 1;
     const method = hasPrefix ? sortByString.slice(1) : sortByString;
-    const methodFactory = SORT_METHODS[method] ?? SORT_METHODS.default;
+    const methodFactory = WORLD_SORT_METHODS[method] ?? WORLD_SORT_METHODS.default;
+
+    return methodFactory(direction);
+}
+
+const PLAYER_SORT_METHODS = {
+    default: d => ({ online: d, legiticoins: d, streak: d }),
+    streak: d => ({ streak: d }),
+    online: d => ({ online: d }),
+    legiticoins: d => ({ legiticoins: d }),
+};
+
+export function parsePlayerSortBy(sortByString = "") {
+    const hasPrefix = sortByString[0] === "+" || sortByString[0] === "-";
+    const direction = !hasPrefix || sortByString[0] === "+" ? -1 : 1;
+    const method = hasPrefix ? sortByString.slice(1) : sortByString;
+    const methodFactory = PLAYER_SORT_METHODS[method] ?? PLAYER_SORT_METHODS.default;
 
     return methodFactory(direction);
 }
