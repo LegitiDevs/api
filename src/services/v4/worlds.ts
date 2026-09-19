@@ -51,8 +51,6 @@ export async function getWorld(collection: Collection<World>, { world_uuid, proj
 
 export async function getWorldsFromPlayer(collection: Collection<World>, { player_uuid, project, sort_by, limit, offset }: GetWorldsFromPlayerOptions) {
     const stages: Document[] = [{ $match: {...WORLDS_DEFAULT_FILTER, owner_uuid: player_uuid} }];
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-    console.log({ $match: {...WORLDS_DEFAULT_FILTER, owner_uuid: player_uuid} })
 
     if (offset !== undefined) stages.push({ $skip: offset })
 	if (limit !== undefined) stages.push({ $limit: limit })
