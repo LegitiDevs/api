@@ -9,7 +9,7 @@ import {
 	SchemaGetWorldListStats,
 	SchemaGetWorldStats,
 } from "#schemas/routes/worlds.js";
-import { WorldsController } from "../../../controllers/v4/worlds.ts";
+import { WorldsController } from "#controllers/v4/worlds.js";
 import { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 import { WorldStatsController } from "#controllers/v4/world_stats.js";
 
