@@ -4,16 +4,18 @@ import { ApiError } from "#util/errors.js"
 import { Collection } from "mongodb"
 
 import type { FastifyInstance } from 'fastify';
-import { SchemaGetRandomWorld, SchemaSearchWorld, SchemaGetWorld, SchemaGetWorldList } from "#schemas/routes/worlds.js"
+import { SchemaGetRandomWorld, SchemaSearchWorld, SchemaGetWorld, SchemaGetWorldList, SchemaGetPlayersInWorldList, SchemaGetPlayersInWorld } from "#schemas/routes/worlds.js"
 import { World } from "#schemas/worlds.js"
 import { FastifyReplyTypeBox, FastifyRequestTypeBox } from "./types.ts";
 
 export class WorldsController {
     worldsCollection: Collection<World>
+    fastify: FastifyInstance
 
     constructor(fastify: FastifyInstance) {
         if (fastify.mongo.db == null) throw new ApiError("DB not found", 500) 
         this.worldsCollection = fastify.mongo.db.collection("worlds")
+        this.fastify = fastify
     }
 
     listWorlds = async (
@@ -63,5 +65,37 @@ export class WorldsController {
         if (!world) throw new ApiError(`World ${world_uuid} not found`, 404);
 
         return world
+    }
+
+    getPlayersInWorldList = async (
+        request: FastifyRequestTypeBox<typeof SchemaGetPlayersInWorldList>,
+        reply: FastifyReplyTypeBox<typeof SchemaGetPlayersInWorldList>
+    ) => {
+        const limit = request.query["limit"] ?? undefined;
+		const offset = request.query["offset"] ?? undefined;
+        
+        try {
+            const players = await WorldsService.getPlayersInWorldList(this.fastify, { offset, limit })
+            return players
+        } catch (error) {
+            throw new ApiError('Scraper is unavailable', 503)
+        }
+    }
+
+    getPlayersInWorld = async (
+        request: FastifyRequestTypeBox<typeof SchemaGetPlayersInWorld>,
+        reply: FastifyReplyTypeBox<typeof SchemaGetPlayersInWorld>
+    ) => {
+        const world_uuid = request.params.world_uuid;
+
+        const world = await WorldsService.getWorld(this.worldsCollection, { world_uuid })
+        if (!world) throw new ApiError(`World ${world_uuid} not found`, 404);
+
+        try {
+            const players = await WorldsService.getPlayersInWorld(this.fastify, { world_uuid })
+            return players
+        } catch (error) {
+            throw new ApiError('Scraper is unavailable', 503)
+        }
     }
 }

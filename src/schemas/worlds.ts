@@ -101,3 +101,15 @@ export const WorldStatsSchema = Type.Object({
     stats: Type.Array(WorldStatsEntrySchema)
 })
 export type WorldStats = Static<typeof WorldStatsSchema>
+
+export const WorldPlayersSchema = Type.Object({
+    players: Type.Array(Type.String())
+})
+
+export const WorldListPlayersSchema = Type.Object({
+    world: WorldUuidSchema,
+    players: Type.Index(WorldPlayersSchema, ['players'])
+})
+
+export type WorldPlayers = Static<typeof WorldPlayersSchema>
+export type WorldListPlayers = Static<typeof WorldListPlayersSchema>

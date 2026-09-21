@@ -8,6 +8,8 @@ import {
 	SchemaSearchWorld,
 	SchemaGetWorldListStats,
 	SchemaGetWorldStats,
+	SchemaGetPlayersInWorldList,
+	SchemaGetPlayersInWorld,
 } from "#schemas/routes/worlds.js";
 import { WorldsController } from "#controllers/v4/worlds.js";
 import { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
@@ -21,9 +23,12 @@ const plugin: FastifyPluginAsyncTypebox = async function (fastify, opts) {
 	fastify.get("/random", { schema: SchemaGetRandomWorld }, worldsController.randomWorld);
 	fastify.get("/search", { schema: SchemaSearchWorld }, worldsController.searchWorld);
 	fastify.get("/:world_uuid", { schema: SchemaGetWorld }, worldsController.getWorld);
+
 	fastify.get("/stats", { schema: SchemaGetWorldListStats }, worldStatsController.getWorldListStats);
 	fastify.get("/:world_uuid/stats", { schema: SchemaGetWorldStats }, worldStatsController.getWorldStats);
 
+	fastify.get("/players", { schema: SchemaGetPlayersInWorldList }, worldsController.getPlayersInWorldList);
+	fastify.get("/:world_uuid/players", { schema: SchemaGetPlayersInWorld }, worldsController.getPlayersInWorld);
 }
 
 export default plugin

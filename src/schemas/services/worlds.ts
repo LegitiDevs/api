@@ -35,8 +35,21 @@ export const SearchWorldOptionsSchema = Type.Intersect([
     })
 ])
 
+export const GetPlayersInWorldListOptionsSchema = Type.Partial(
+    Type.Object({
+        offset: WholeNumberSchema,
+        limit: NaturalNumberSchema
+    })
+)
+
+export const GetPlayersInWorldOptionsSchema = Type.Object({
+    world_uuid: WorldUuidSchema
+})
+
 export type GetWorldOptions = Static<typeof GetWorldOptionsSchema>
 export type ListWorldsOptions = Static<typeof ListWorldsOptionsSchema>
 export type GetWorldsFromPlayerOptions = Static<typeof GetWorldsFromPlayerOptionsSchema>
 export type RandomWorldOptions = Static<typeof RandomWorldOptionsSchema>
 export type SearchWorldOptions = Static<typeof SearchWorldOptionsSchema>
+export type GetPlayersInWorldListOptions = Static<typeof GetPlayersInWorldListOptionsSchema>
+export type GetPlayersInWorldOptions = Static<typeof GetPlayersInWorldOptionsSchema>

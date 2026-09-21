@@ -1,6 +1,8 @@
 import { Collection, Document } from "mongodb";
-import { World } from "#schemas/worlds.js";
-import { GetWorldOptions, GetWorldsFromPlayerOptions, ListWorldsOptions, RandomWorldOptions, SearchWorldOptions } from "#schemas/services/worlds.js";
+import { World, WorldPlayers } from "#schemas/worlds.js";
+import { GetPlayersInWorldListOptions, GetPlayersInWorldOptions, GetWorldOptions, GetWorldsFromPlayerOptions, ListWorldsOptions, RandomWorldOptions, SearchWorldOptions } from "#schemas/services/worlds.js";
+import { FastifyInstance } from "fastify";
+import { standardizeUUID } from "#util/utils.js";
 
 export const WORLDS_DEFAULT_FILTER = {
   "legitidevs.deleted": { $ne: true },
@@ -63,4 +65,34 @@ export async function getWorldsFromPlayer(collection: Collection<World>, { playe
 
 	stages.push({ $project: project });
 	return await collection.aggregate(stages).toArray();
+}
+
+export async function getPlayersInWorldList(fastify: FastifyInstance, { offset, limit }: GetPlayersInWorldListOptions) {
+    if (fastify.mongo.db == null) throw new Error(`DB does not exist`)
+
+    const response = await fastify.legitidevs_scraper.fetch('/players')
+    if (!response.ok) throw new Error(`Failed to fetch players in world list.`)
+
+    const players = await response.json()
+
+    const stages: Document[] = [
+        { $documents: players }
+    ];  
+
+    if (offset !== undefined) stages.push({ $skip: offset })
+	if (limit !== undefined) stages.push({ $limit: limit })
+    
+    return await fastify.mongo.db.aggregate(stages).toArray();
+}
+
+export async function getPlayersInWorld(fastify: FastifyInstance, { world_uuid }: GetPlayersInWorldOptions) {
+    if (fastify.mongo.db == null) throw new Error(`DB does not exist`)
+
+    const hyphenated_world_uuid = standardizeUUID(world_uuid);
+    const response = await fastify.legitidevs_scraper.fetch(`/players/${hyphenated_world_uuid}`)
+    if (!response.ok) throw new Error(`Failed to fetch players in world list.`)
+
+    const playersInWorld = await response.json() as WorldPlayers
+
+    return { players: [playersInWorld.players] }
 }

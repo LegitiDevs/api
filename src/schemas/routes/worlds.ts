@@ -1,5 +1,5 @@
 import { Type } from "@fastify/type-provider-typebox"
-import { GetWorldOptionsSchema, GetWorldsFromPlayerOptionsSchema, ListWorldsOptionsSchema, RandomWorldOptionsSchema, SearchWorldOptionsSchema } from "#schemas/services/worlds.js";
+import { GetPlayersInWorldListOptionsSchema, GetPlayersInWorldOptionsSchema, GetWorldOptionsSchema, GetWorldsFromPlayerOptionsSchema, ListWorldsOptionsSchema, RandomWorldOptionsSchema, SearchWorldOptionsSchema } from "#schemas/services/worlds.js";
 import { WorldSortBySchema } from "#schemas/worlds.js";
 
 // TODO: move regex checking logic to the controller, not the schema
@@ -57,4 +57,12 @@ export const SchemaGetWorldStats = {
 export const SchemaGetWorldsFromPlayer = {
     params: Type.Pick(GetWorldsFromPlayerOptionsSchema, Type.Literal('player_uuid')),
     querystring: SchemaGetWorldList.querystring
+}
+
+export const SchemaGetPlayersInWorldList = {
+    querystring: GetPlayersInWorldListOptionsSchema
+}
+
+export const SchemaGetPlayersInWorld = {
+    params: GetPlayersInWorldOptionsSchema
 }
