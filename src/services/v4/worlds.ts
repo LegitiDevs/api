@@ -1,5 +1,5 @@
 import { Collection, Document } from "mongodb";
-import { World, WorldPlayers } from "#schemas/worlds.js";
+import { World, WorldListPlayers, WorldPlayers } from "#schemas/worlds.js";
 import { GetPlayersInWorldListOptions, GetPlayersInWorldOptions, GetWorldOptions, GetWorldsFromPlayerOptions, ListWorldsOptions, RandomWorldOptions, SearchWorldOptions } from "#schemas/services/worlds.js";
 import { FastifyInstance } from "fastify";
 import { standardizeUUID } from "#util/utils.js";
@@ -73,7 +73,7 @@ export async function getPlayersInWorldList(fastify: FastifyInstance, { offset, 
     const response = await fastify.legitidevs_scraper.fetch('/players')
     if (!response.ok) throw new Error(`Failed to fetch players in world list.`)
 
-    const players = await response.json()
+    const players = await response.json() as WorldListPlayers[]
 
     const stages: Document[] = [
         { $documents: players }
@@ -82,7 +82,7 @@ export async function getPlayersInWorldList(fastify: FastifyInstance, { offset, 
     if (offset !== undefined) stages.push({ $skip: offset })
 	if (limit !== undefined) stages.push({ $limit: limit })
     
-    return await fastify.mongo.db.aggregate(stages).toArray();
+    return await fastify.mongo.db.aggregate(stages).toArray() as WorldListPlayers[];
 }
 
 export async function getPlayersInWorld(fastify: FastifyInstance, { world_uuid }: GetPlayersInWorldOptions) {
@@ -94,5 +94,5 @@ export async function getPlayersInWorld(fastify: FastifyInstance, { world_uuid }
 
     const playersInWorld = await response.json() as WorldPlayers
 
-    return { players: [playersInWorld.players] }
+    return { players: playersInWorld.players } as WorldPlayers
 }

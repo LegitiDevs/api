@@ -8,9 +8,8 @@ export async function listPlayers(fastify: FastifyInstance, { project, sort_by, 
     if (fastify.mongo.db == null) throw new Error(`DB does not exist`)
 
     const response = await fastify.legitidevs_scraper.fetch('/player')
-    if (!response.ok) throw new Error(`Failed to fetch players`)
 
-    const players = await response.json()
+    const players = await response.json() as Player[]
 
     const stages: Document[] = [
         { $documents: players }, 
@@ -21,7 +20,7 @@ export async function listPlayers(fastify: FastifyInstance, { project, sort_by, 
     if (limit !== undefined) stages.push({ $limit: limit })
 
     stages.push({ $project: project });
-    return await fastify.mongo.db.aggregate(stages).toArray();
+    return await fastify.mongo.db.aggregate(stages).toArray() as Player[];
 }
 
 export async function getPlayer(fastify: FastifyInstance, { player_uuid, project }: GetPlayerOptions) {
@@ -29,16 +28,15 @@ export async function getPlayer(fastify: FastifyInstance, { player_uuid, project
     
     const hyphenated_player_uuid = standardizeUUID(player_uuid)
     const response = await fastify.legitidevs_scraper.fetch(`/player/${hyphenated_player_uuid}`)
-    if (!response.ok) throw new Error(`Failed to fetch player`)
+
+    if (!response.ok && response.status == 500) return {}
 
     const player = await response.json() as Player;
-
-    if (Object.keys(player).length == 0) return {}
 
     const projected = await fastify.mongo.db.aggregate([
         { $documents: [player] },
         { $project: project }
     ]).toArray()
 
-    return projected[0]
+    return projected[0] as Partial<Player>
 }

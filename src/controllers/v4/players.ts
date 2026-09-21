@@ -10,6 +10,7 @@ import { SchemaGetPlayer, SchemaGetPlayerList } from "#schemas/routes/players.js
 import { World } from "#schemas/worlds.js"
 import { SchemaGetWorldsFromPlayer } from "#schemas/routes/worlds.js"
 import { parsePlayerSortBy, parseProject, parseWorldSortBy } from "#util/query.js"
+import { Player } from "#schemas/players.js"
 
 
 export class PlayersController {
@@ -31,12 +32,15 @@ export class PlayersController {
         const limit = request.query["limit"] ?? undefined
         const offset = request.query["offset"] ?? undefined
         
+        let playerList: Player[]
+
         try {
-            const playerList = await PlayersService.listPlayers(this.fastify, { project, sort_by, limit, offset })
-            return playerList
+            playerList = await PlayersService.listPlayers(this.fastify, { project, sort_by, limit, offset })
         } catch (error) {
             throw new ApiError('Scraper is unavailable', 503)
         }
+
+        return playerList
     }
 
     getPlayer = async (
@@ -46,15 +50,17 @@ export class PlayersController {
         const player_uuid = request.params["player_uuid"];
         const project = parseProject(request.query["project"])
 
+        let player: Partial<Player>;
+
         try {
-            const player = await PlayersService.getPlayer(this.fastify, { player_uuid, project })
-
-            if (Object.keys(player).length == 0) throw new ApiError(`Player ${player_uuid} not found`, 404)
-
-            return player
+            player = await PlayersService.getPlayer(this.fastify, { player_uuid, project })
         } catch (error) {
             throw new ApiError('Scraper is unavailable', 503)
         }
+
+        if (Object.keys(player).length == 0) throw new ApiError(`Player ${player_uuid} not found`, 404)
+
+        return player
     }
 
     getWorldsFromPlayer = async (
