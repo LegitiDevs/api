@@ -5,7 +5,7 @@ import { Collection } from "mongodb"
 
 import type { FastifyInstance } from 'fastify';
 import { SchemaGetRandomWorld, SchemaSearchWorld, SchemaGetWorld, SchemaGetWorldList, SchemaGetPlayersInWorldList, SchemaGetPlayersInWorld } from "#schemas/routes/worlds.js"
-import { World } from "#schemas/worlds.js"
+import { World, WorldListPlayers, WorldPlayers } from "#schemas/worlds.js"
 import { FastifyReplyTypeBox, FastifyRequestTypeBox } from "./types.ts";
 
 export class WorldsController {
@@ -73,13 +73,16 @@ export class WorldsController {
     ) => {
         const limit = request.query["limit"] ?? undefined;
 		const offset = request.query["offset"] ?? undefined;
+
+        let players: WorldListPlayers[]
         
         try {
-            const players = await WorldsService.getPlayersInWorldList(this.fastify, { offset, limit })
-            return players
+            players = await WorldsService.getPlayersInWorldList(this.fastify, { offset, limit })
         } catch (error) {
             throw new ApiError('Scraper is unavailable', 503)
         }
+
+        return players
     }
 
     getPlayersInWorld = async (
@@ -91,11 +94,14 @@ export class WorldsController {
         const world = await WorldsService.getWorld(this.worldsCollection, { world_uuid })
         if (!world) throw new ApiError(`World ${world_uuid} not found`, 404);
 
+        let players: WorldPlayers
+
         try {
-            const players = await WorldsService.getPlayersInWorld(this.fastify, { world_uuid })
-            return players
+            players = await WorldsService.getPlayersInWorld(this.fastify, { world_uuid })
         } catch (error) {
             throw new ApiError('Scraper is unavailable', 503)
         }
+
+        return players
     }
 }
