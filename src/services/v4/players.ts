@@ -1,3 +1,4 @@
+import { Player } from "#schemas/players.js";
 import { GetPlayerOptions, ListPlayersOptions } from "#schemas/services/players.js";
 import { standardizeUUID } from "#util/utils.js";
 import { FastifyInstance } from "fastify";
@@ -30,11 +31,14 @@ export async function getPlayer(fastify: FastifyInstance, { player_uuid, project
     const response = await fastify.legitidevs_scraper.fetch(`/player/${hyphenated_player_uuid}`)
     if (!response.ok) throw new Error(`Failed to fetch player`)
 
-    const player = await response.json()
+    const player = await response.json() as Player;
 
-    return await fastify.mongo.db.aggregate([
+    if (Object.keys(player).length == 0) return {}
+
+    const projected = await fastify.mongo.db.aggregate([
         { $documents: [player] },
-        { $match: { 'uuid': player_uuid } },
         { $project: project }
     ]).toArray()
+
+    return projected[0]
 }

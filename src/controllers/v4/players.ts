@@ -46,10 +46,15 @@ export class PlayersController {
         const player_uuid = request.params["player_uuid"];
         const project = parseProject(request.query["project"])
 
-        const player = await PlayersService.getPlayer(this.fastify, { player_uuid, project })
-        if (player.length == 0) throw new ApiError(`Player ${player_uuid} not found`, 404);
+        try {
+            const player = await PlayersService.getPlayer(this.fastify, { player_uuid, project })
 
-        return player[0]
+            if (Object.keys(player).length == 0) throw new ApiError(`Player ${player_uuid} not found`, 404)
+
+            return player
+        } catch (error) {
+            throw new ApiError('Scraper is unavailable', 503)
+        }
     }
 
     getWorldsFromPlayer = async (
