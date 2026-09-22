@@ -13,6 +13,8 @@ import FastifyMongoDB from "@fastify/mongodb";
 import FastifySwagger from "@fastify/swagger";
 import LegitiDevsScraperPlugin from "./plugins/legitidevs_scraper_plugin.ts"
 import packageJson from "../package.json" with {type: "json"}
+import openApiConfig from "./openapi_config.json" with {type: "json"}
+openApiConfig.openapi.info.version = packageJson.version
 
 // Types
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
@@ -24,6 +26,11 @@ const options = {};
 
 export default async function (fastify: FastifyInstance, opts: FastifyPluginOptions) {
 	fastify.setValidatorCompiler(TypeBoxValidatorCompiler);
+
+	// ingore serializing response schemas while still keeping openapi spec
+	fastify.setSerializerCompiler(({ schema, method, url, httpStatus }) => {
+	  	return (data) => JSON.stringify(data);
+	});
 	
 	await fastify.register(FastifyCors, {});
 	await fastify.register(FastifyRateLimit, {
@@ -38,31 +45,7 @@ export default async function (fastify: FastifyInstance, opts: FastifyPluginOpti
 	await fastify.register(LegitiDevsScraperPlugin, {
 		scraper_uri: process.env.SCRAPER_URI
 	})
-	await fastify.register(FastifySwagger, {
-		openapi: {
-			openapi: "3.2.0",
-			info: {
-				title: "Legitimoose API",
-				description: "An API for getting data from legitimoose.com and miscellaneous LegitiDevs info.",
-				contact: {
-					name: "LegitiDevs",
-					url: "https://legiti.dev"
-				},
-				license: {
-					name: "MIT",
-					url: "https://github.com/LegitiDevs/api/blob/master/LICENSE"
-				},
-				version: packageJson.version,
-			},
-			servers: [{
-				url: 'https://api.legiti.dev',
-				description: "Production Server"
-			}, {
-				url: 'https://127.0.0.1:3000',
-				description: "Local Server"
-			}]
-		}
-	})
+	await fastify.register(FastifySwagger, openApiConfig)
 
 	fastify.addHook('onRoute', (routeOptions) => {
 	  if (!routeOptions.url.startsWith("/v4")) {

@@ -1,6 +1,6 @@
 import { NaturalNumberSchema, UuidSchema, WholeNumberSchema } from "#schemas/generic.js"
 import { Static, Type } from "@fastify/type-provider-typebox"
-import { ProjectSchema, SortBySchema } from "./generic.ts"
+import { ProjectSchema, SortBySchema } from "#schemas/services/generic.js"
 import { WorldUuidSchema } from "#schemas/worlds.js"
 
 export const GetWorldOptionsSchema = Type.Object({
@@ -31,7 +31,7 @@ export const RandomWorldOptionsSchema = Type.Omit(ListWorldsOptionsSchema, Type.
 export const SearchWorldOptionsSchema = Type.Intersect([
     ListWorldsOptionsSchema,
     Type.Object({
-        query: Type.String()
+        query: Type.String({ description: "A search query", examples: ['chaos box', 'pvp', 'moose'] })
     })
 ])
 
