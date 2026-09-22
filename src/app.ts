@@ -53,9 +53,20 @@ export default async function (fastify: FastifyInstance, opts: FastifyPluginOpti
 					url: "https://github.com/LegitiDevs/api/blob/master/LICENSE"
 				},
 				version: packageJson.version,
-			}
+			},
+			servers: [{
+				url: 'http://127.0.0.1:3000'
+			}]
 		}
 	})
+
+	fastify.addHook('onRoute', (routeOptions) => {
+	  if (!routeOptions.url.startsWith("/v4")) {
+	    routeOptions.schema ??= {};
+	    routeOptions.schema.hide = true;
+	  }
+	});
+
 
 	await fastify.register(FastifyAutoLoad, {
 		dir: path.join(__dirname, "routes"),
