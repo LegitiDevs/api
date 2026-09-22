@@ -82,7 +82,7 @@ export const SchemaGetWorldsFromPlayer = {
     params: Type.Pick(GetWorldsFromPlayerOptionsSchema, ['player_uuid']),
     querystring: SchemaGetWorldList.querystring,
     response: {
-        200: SchemaGetWorldList.response
+        200: SchemaGetWorldList.response['200']
     },
 
     summary: "Get worlds by a player",

@@ -19,7 +19,7 @@ export const JamScoreSchema = Type.Object({
 
 export const JamSchema = Type.Partial(Type.Object({
     id: NumberIdSchema,
-    upgraded: Type.Boolean(),
+    upgraded: Type.Boolean({ description: "Whether this jam world has been upgraded to a normal world." }),
     rating_count: WholeNumberSchema,
     scores: Type.Object({
         overall: JamScoreSchema,
@@ -52,7 +52,7 @@ export const WorldSchema = Type.Object({
     creation_date: Type.String(),
     creation_date_unix_seconds: UnixTimestampSchema,
     enforce_whitelist: Type.Boolean(),
-    featured_instant: Type.Union([Type.Literal(-1), UnixTimestampSchema], { description: "Timestamp when this world was featured. This world is not featured the value matches `-1`." }),
+    featured_instant: Type.Union([Type.Literal(-1), UnixTimestampSchema], { description: "Timestamp when this world was featured. This world is not featured if the value matches `-1`." }),
 
     // Jam info
     jam: JamSchema,
