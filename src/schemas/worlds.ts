@@ -32,7 +32,10 @@ export const JamSchema = Type.Partial(Type.Object({
 
 export const LegitiDevsSchema = Type.Partial(Type.Object({}), { description: "Extra metadata for LegitiDevs services" })
 
-export const WorldUuidSchema = Type.Union([UuidSchema, Type.Literal("lobby")], { description: "A world UUID or `lobby`" })
+export const WorldUuidSchema = Type.Union([UuidSchema, Type.Literal("lobby")], { 
+    description: "A world UUID or `lobby`",
+    examples: ['de9b06f4-39ea-4143-b0db-e4db7060b842', 'lobby']
+})
 
 export const WorldSchema = Type.Object({
     // Main info
