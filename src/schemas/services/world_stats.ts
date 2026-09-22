@@ -1,5 +1,5 @@
 import Type, { Static } from "typebox";
-import { ProjectSchema } from "./generic.ts";
+import { ProjectSchema } from "#schemas/services/generic.js";
 import { WorldUuidSchema } from "#schemas/worlds.js";
 
 

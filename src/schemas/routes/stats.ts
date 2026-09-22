@@ -1,6 +1,7 @@
-import { FastifySchema } from "fastify";
 import Type from "typebox";
-import { ProjectQueryStringSchema } from "./generic.ts";
+import { FastifySchema } from "fastify";
+
+import { ProjectQueryStringSchema } from "#schemas/routes/generic.js";
 import { ServerStatsSchema } from "#schemas/stats.js";
 
 export const SchemaGetServerStats = {

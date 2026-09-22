@@ -1,9 +1,13 @@
 "use strict";
 import "dotenv/config";
 
-import { PlayersController } from "#controllers/v4/players.js";
 import { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
-import { SchemaGetPlayer, SchemaGetPlayerList, SchemaGetWorldsFromPlayer } from "#schemas/routes/players.js";
+import { PlayersController } from "#controllers/v4/players.js";
+import { 
+    SchemaGetPlayer, 
+    SchemaGetPlayerList, 
+    SchemaGetWorldsFromPlayer 
+} from "#schemas/routes/players.js";
 
 const plugin: FastifyPluginAsyncTypebox = async function (fastify, opts) {
     const playersController = new PlayersController(fastify)

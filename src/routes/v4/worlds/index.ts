@@ -1,6 +1,9 @@
 "use strict";
 import "dotenv/config";
 
+import { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
+import { WorldsController } from "#controllers/v4/worlds.js";
+import { WorldStatsController } from "#controllers/v4/world_stats.js";
 import { 
 	SchemaGetWorldList, 
 	SchemaGetRandomWorld,
@@ -11,9 +14,6 @@ import {
 	SchemaGetPlayersInWorldList,
 	SchemaGetPlayersInWorld,
 } from "#schemas/routes/worlds.js";
-import { WorldsController } from "#controllers/v4/worlds.js";
-import { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
-import { WorldStatsController } from "#controllers/v4/world_stats.js";
 
 const plugin: FastifyPluginAsyncTypebox = async function (fastify, opts) {
 	const worldsController = new WorldsController(fastify)

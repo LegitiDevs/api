@@ -6,7 +6,10 @@ import { Collection } from "mongodb"
 import type { FastifyInstance } from 'fastify';
 import { SchemaGetRandomWorld, SchemaSearchWorld, SchemaGetWorld, SchemaGetWorldList, SchemaGetPlayersInWorldList, SchemaGetPlayersInWorld } from "#schemas/routes/worlds.js"
 import { World, WorldListPlayers, WorldPlayers } from "#schemas/worlds.js"
-import { FastifyReplyTypeBox, FastifyRequestTypeBox } from "./types.ts";
+import {
+	FastifyReplyTypeBox,
+	FastifyRequestTypeBox,
+} from "#controllers/v4/types.js";
 
 export class WorldsController {
     worldsCollection: Collection<World>

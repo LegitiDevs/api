@@ -1,5 +1,5 @@
 import Type, { Static } from "typebox"
-import { ProjectSchema } from "./generic.ts"
+import { ProjectSchema } from "#schemas/services/generic.js"
 
 export const GetServerStatsOptionsSchema = Type.Object({
     project: Type.Optional(ProjectSchema),

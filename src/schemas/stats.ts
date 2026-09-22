@@ -1,6 +1,6 @@
 import Type, { Static } from "typebox";
-import { WorldSchema } from "./worlds.ts";
-import { DateTimeSchema } from "./generic.ts";
+import { WorldSchema } from "#schemas/worlds.js";
+import { DateTimeSchema } from "#schemas/generic.js";
 
 
 export const ServerStatsSchema = Type.Object({

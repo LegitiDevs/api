@@ -1,5 +1,5 @@
 import Type, { Static } from "typebox"
-import { ProjectSchema, SortBySchema } from "./generic.ts"
+import { ProjectSchema, SortBySchema } from "#schemas/services/generic.js"
 import { NaturalNumberSchema, UuidSchema, WholeNumberSchema } from "#schemas/generic.js"
 
 export const GetPlayerOptionsSchema = Type.Object({

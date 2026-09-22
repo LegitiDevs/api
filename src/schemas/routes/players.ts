@@ -1,12 +1,18 @@
-import { GetPlayerOptionsSchema } from "#schemas/services/players.js"
-import { GetWorldsFromPlayerOptionsSchema, ListWorldsOptionsSchema } from "#schemas/services/worlds.js"
-import { FastifySchema } from "fastify"
 import Type from "typebox"
-import { ProjectQueryStringSchema } from "./generic.ts"
 import Format from "typebox/format"
+import { FastifySchema } from "fastify"
+
 import { checkSortByParameter } from "#schemas/formats.js"
 import { PlayerSchema } from "#schemas/players.js"
-import { SchemaGetWorldList } from "./worlds.ts"
+
+import { GetPlayerOptionsSchema } from "#schemas/services/players.js"
+import { 
+    GetWorldsFromPlayerOptionsSchema, 
+    ListWorldsOptionsSchema 
+} from "#schemas/services/worlds.js"
+
+import { ProjectQueryStringSchema } from "#schemas/routes/generic.js"
+import { SchemaGetWorldList } from "#schemas/routes/worlds.js"
 
 export const PlayerSortMethodsEnum = Type.Union([
     Type.Literal("default"),

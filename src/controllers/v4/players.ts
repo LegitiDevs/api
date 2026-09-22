@@ -1,77 +1,100 @@
-
-
-import * as PlayersService from "#services/v4/players.js"
-import * as WorldsService from "#services/v4/worlds.js"
-import { ApiError } from "#util/errors.js"
-import { FastifyInstance } from "fastify"
-import { Collection } from "mongodb"
-import { FastifyReplyTypeBox, FastifyRequestTypeBox } from "./types.ts"
-import { SchemaGetPlayer, SchemaGetPlayerList, SchemaGetWorldsFromPlayer } from "#schemas/routes/players.js"
-import { World } from "#schemas/worlds.js"
-import { parsePlayerSortBy, parseProject, parseWorldSortBy } from "#util/query.js"
-import { Player } from "#schemas/players.js"
-
+import * as PlayersService from "#services/v4/players.js";
+import * as WorldsService from "#services/v4/worlds.js";
+import { ApiError } from "#util/errors.js";
+import { FastifyInstance } from "fastify";
+import { Collection } from "mongodb";
+import {
+	FastifyReplyTypeBox,
+	FastifyRequestTypeBox,
+} from "#controllers/v4/types.js";
+import {
+	SchemaGetPlayer,
+	SchemaGetPlayerList,
+	SchemaGetWorldsFromPlayer,
+} from "#schemas/routes/players.js";
+import { World } from "#schemas/worlds.js";
+import {
+	parsePlayerSortBy,
+	parseProject,
+	parseWorldSortBy,
+} from "#util/query.js";
+import { Player } from "#schemas/players.js";
 
 export class PlayersController {
-    worldsCollection: Collection<World>
-    fastify: FastifyInstance
+	worldsCollection: Collection<World>;
+	fastify: FastifyInstance;
 
-    constructor(fastify: FastifyInstance) {
-        if (fastify.mongo.db == null) throw new ApiError("DB not found", 500) 
-        this.worldsCollection = fastify.mongo.db.collection("worlds")
-        this.fastify = fastify
-    }
+	constructor(fastify: FastifyInstance) {
+		if (fastify.mongo.db == null) throw new ApiError("DB not found", 500);
+		this.worldsCollection = fastify.mongo.db.collection("worlds");
+		this.fastify = fastify;
+	}
 
-    listPlayers = async (
-        request: FastifyRequestTypeBox<typeof SchemaGetPlayerList>,
-        reply: FastifyReplyTypeBox<typeof SchemaGetPlayerList>
-    ) => {
-        const project = parseProject(request.query["project"])
-        const sort_by = parsePlayerSortBy(request.query["sort_by"])
-        const limit = request.query["limit"] ?? undefined
-        const offset = request.query["offset"] ?? undefined
-        
-        let playerList: Player[]
+	listPlayers = async (
+		request: FastifyRequestTypeBox<typeof SchemaGetPlayerList>,
+		reply: FastifyReplyTypeBox<typeof SchemaGetPlayerList>,
+	) => {
+		const project = parseProject(request.query["project"]);
+		const sort_by = parsePlayerSortBy(request.query["sort_by"]);
+		const limit = request.query["limit"] ?? undefined;
+		const offset = request.query["offset"] ?? undefined;
 
-        try {
-            playerList = await PlayersService.listPlayers(this.fastify, { project, sort_by, limit, offset })
-        } catch (error) {
-            throw new ApiError('Scraper is unavailable', 503)
-        }
+		let playerList: Player[];
 
-        return playerList
-    }
+		try {
+			playerList = await PlayersService.listPlayers(this.fastify, {
+				project,
+				sort_by,
+				limit,
+				offset,
+			});
+		} catch (error) {
+			throw new ApiError("Scraper is unavailable", 503);
+		}
 
-    getPlayer = async (
-        request: FastifyRequestTypeBox<typeof SchemaGetPlayer>,
-        reply: FastifyReplyTypeBox<typeof SchemaGetPlayer>
-    ) => {
-        const player_uuid = request.params["player_uuid"];
-        const project = parseProject(request.query["project"])
+		return playerList;
+	};
 
-        let player: Partial<Player>;
+	getPlayer = async (
+		request: FastifyRequestTypeBox<typeof SchemaGetPlayer>,
+		reply: FastifyReplyTypeBox<typeof SchemaGetPlayer>,
+	) => {
+		const player_uuid = request.params["player_uuid"];
+		const project = parseProject(request.query["project"]);
 
-        try {
-            player = await PlayersService.getPlayer(this.fastify, { player_uuid, project })
-        } catch (error) {
-            throw new ApiError('Scraper is unavailable', 503)
-        }
+		let player: Partial<Player>;
 
-        if (Object.keys(player).length == 0) throw new ApiError(`Player ${player_uuid} not found`, 404)
+		try {
+			player = await PlayersService.getPlayer(this.fastify, {
+				player_uuid,
+				project,
+			});
+		} catch (error) {
+			throw new ApiError("Scraper is unavailable", 503);
+		}
 
-        return player
-    }
+		if (Object.keys(player).length == 0)
+			throw new ApiError(`Player ${player_uuid} not found`, 404);
 
-    getWorldsFromPlayer = async (
-        request: FastifyRequestTypeBox<typeof SchemaGetWorldsFromPlayer>,
-        reply: FastifyReplyTypeBox<typeof SchemaGetWorldsFromPlayer>
-    ) => {
-        const project = parseProject(request.query["project"])
-        const sort_by = parseWorldSortBy(request.query["sort_by"])
-        const limit = request.query["limit"] ?? undefined
-        const offset = request.query["offset"] ?? undefined
-        const player_uuid = request.params.player_uuid
+		return player;
+	};
 
-        return await WorldsService.getWorldsFromPlayer(this.worldsCollection, { player_uuid, project, sort_by, limit, offset })
-    }
+	getWorldsFromPlayer = async (
+		request: FastifyRequestTypeBox<typeof SchemaGetWorldsFromPlayer>,
+		reply: FastifyReplyTypeBox<typeof SchemaGetWorldsFromPlayer>,
+	) => {
+		const project = parseProject(request.query["project"]);
+		const sort_by = parseWorldSortBy(request.query["sort_by"]);
+		const limit = request.query["limit"] ?? undefined;
+		const offset = request.query["offset"] ?? undefined;
+		const player_uuid = request.params.player_uuid;
+
+		return await WorldsService.getWorldsFromPlayer(this.worldsCollection, {
+			player_uuid,
+			project,
+			sort_by,
+			limit,
+			offset,
+		});
+	};
 }

@@ -1,6 +1,6 @@
 import Type, { Static } from "typebox";
-import { UuidSchema, WholeNumberSchema } from "./generic.ts";
-import { WorldUuidSchema } from "./worlds.ts";
+import { UuidSchema, WholeNumberSchema } from "#schemas/generic.js";
+import { WorldUuidSchema } from "#schemas/worlds.js";
 
 export const PlayerSchema = Type.Object({
     streak: WholeNumberSchema,
