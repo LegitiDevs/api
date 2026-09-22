@@ -55,7 +55,11 @@ export default async function (fastify: FastifyInstance, opts: FastifyPluginOpti
 				version: packageJson.version,
 			},
 			servers: [{
-				url: 'http://127.0.0.1:3000'
+				url: 'https://api.legiti.dev',
+				description: "Production Server"
+			}, {
+				url: 'https://127.0.0.1:3000',
+				description: "Local Server"
 			}]
 		}
 	})
