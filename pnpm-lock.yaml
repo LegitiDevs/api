@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  mongodb: ^7.2.0
-
 importers:
 
   .:
