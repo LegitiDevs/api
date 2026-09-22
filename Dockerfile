@@ -33,6 +33,6 @@ COPY package.json pnpm-lock.yaml ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 
-EXPOSE 3001
+EXPOSE 3000
 
 CMD ["pnpm", "start"]
