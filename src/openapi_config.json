@@ -1,0 +1,38 @@
+{
+	"openapi": {
+		"openapi": "3.2.0",
+		"info": {
+			"title": "Legitimoose API",
+			"description": "An API for getting data from legitimoose.com and miscellaneous LegitiDevs info.",
+			"contact": {
+				"name": "LegitiDevs",
+				"url": "https://legiti.dev"
+			},
+			"license": {
+				"name": "MIT",
+				"url": "https://github.com/LegitiDevs/api/blob/master/LICENSE"
+			},
+            "version": "<Filled in automatically>"
+		},
+		"servers": [{
+			"url": "https://api.legiti.dev",
+			"description": "Production Server"
+		}, {
+			"url": "http://127.0.0.1:3000",
+			"description": "Local Server"
+		}],
+        "tags": [{
+            "name": "worlds",
+            "summary": "Worlds",
+            "description": "Endpoints related to world resources and properties."
+        }, {
+            "name": "players",
+            "summary": "Players",
+            "description": "Endpoints related to player info."
+        }, {
+            "name": "misc",
+            "summary": "Miscellaneous",
+            "description": "Miscellaneous endpoints."
+        }]
+	}
+}

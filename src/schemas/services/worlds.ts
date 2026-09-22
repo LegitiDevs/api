@@ -1,0 +1,55 @@
+import { NaturalNumberSchema, UuidSchema, WholeNumberSchema } from "#schemas/generic.js"
+import { Static, Type } from "@fastify/type-provider-typebox"
+import { ProjectSchema, SortBySchema } from "#schemas/services/generic.js"
+import { WorldUuidSchema } from "#schemas/worlds.js"
+
+export const GetWorldOptionsSchema = Type.Object({
+    world_uuid: WorldUuidSchema,
+    project: Type.Optional(ProjectSchema),
+})
+
+export const ListWorldsOptionsSchema = Type.Partial(
+    Type.Object({
+        sort_by: SortBySchema,
+        project: ProjectSchema,
+        offset: WholeNumberSchema,
+        limit: NaturalNumberSchema,
+    })
+)
+
+export const GetWorldsFromPlayerOptionsSchema = Type.Intersect([
+    ListWorldsOptionsSchema,
+    Type.Object({
+        player_uuid: UuidSchema
+    })
+])
+
+export const RandomWorldOptionsSchema = Type.Omit(ListWorldsOptionsSchema, Type.Union([
+    Type.Literal("offset")
+]))
+
+export const SearchWorldOptionsSchema = Type.Intersect([
+    ListWorldsOptionsSchema,
+    Type.Object({
+        query: Type.String({ description: "A search query", examples: ['chaos box', 'pvp', 'moose'] })
+    })
+])
+
+export const GetPlayersInWorldListOptionsSchema = Type.Partial(
+    Type.Object({
+        offset: WholeNumberSchema,
+        limit: NaturalNumberSchema
+    })
+)
+
+export const GetPlayersInWorldOptionsSchema = Type.Object({
+    world_uuid: WorldUuidSchema
+})
+
+export type GetWorldOptions = Static<typeof GetWorldOptionsSchema>
+export type ListWorldsOptions = Static<typeof ListWorldsOptionsSchema>
+export type GetWorldsFromPlayerOptions = Static<typeof GetWorldsFromPlayerOptionsSchema>
+export type RandomWorldOptions = Static<typeof RandomWorldOptionsSchema>
+export type SearchWorldOptions = Static<typeof SearchWorldOptionsSchema>
+export type GetPlayersInWorldListOptions = Static<typeof GetPlayersInWorldListOptionsSchema>
+export type GetPlayersInWorldOptions = Static<typeof GetPlayersInWorldOptionsSchema>

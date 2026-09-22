@@ -13,14 +13,22 @@ To get started with the project, follow these steps:
 
 `git clone https://github.com/LegitiDevs/api.git`
 
-2. Run the following commands
-```
-cd api
-npm install
-```
+2. Run the following commands in the folder you cloned or forked the project:
 
+`pnpm install`
+
+
+## Running the API:
+
+To run the api, follow these steps:
+
+1. Build the API.
+
+`pnpm run build`
+
+2. Run the API.
+
+`pnpm run start`
+
+Alternatively, you can use `pnpm run build:start` to build and run the api in one command.
 ---
-
-## How to Contribute
-
-Please refer to [CONTRIBUTING.md](https://github.com/LegitiDevs/api/blob/master/CONTRIBUTING.md)
