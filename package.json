@@ -1,6 +1,6 @@
 {
   "name": "api",
-  "version": "4.0.0-beta.1",
+  "version": "4.0.0-beta.2",
   "description": "LegitiDevs API",
   "main": "app.js",
   "type": "module",
@@ -40,6 +40,7 @@
     "@fastify/mongodb": "^10.0.0",
     "@fastify/rate-limit": "^10.2.2",
     "@fastify/sensible": "^6.0.4",
+    "@fastify/swagger": "^9.8.2",
     "@fastify/type-provider-typebox": "^6.1.0",
     "close-with-grace": "^2.5.0",
     "dotenv": "^17.3.1",

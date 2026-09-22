@@ -10,7 +10,9 @@ import FastifyCors from "@fastify/cors";
 import FastifyRateLimit from "@fastify/rate-limit";
 import FastifyAutoLoad from "@fastify/autoload";
 import FastifyMongoDB from "@fastify/mongodb";
+import FastifySwagger from "@fastify/swagger";
 import LegitiDevsScraperPlugin from "./plugins/legitidevs_scraper_plugin.ts"
+import packageJson from "../package.json" with {type: "json"}
 
 // Types
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
@@ -36,11 +38,31 @@ export default async function (fastify: FastifyInstance, opts: FastifyPluginOpti
 	await fastify.register(LegitiDevsScraperPlugin, {
 		scraper_uri: process.env.SCRAPER_URI
 	})
+	await fastify.register(FastifySwagger, {
+		openapi: {
+			openapi: "3.2.0",
+			info: {
+				title: "Legitimoose API",
+				description: "An API for getting data from legitimoose.com and miscellaneous LegitiDevs info.",
+				contact: {
+					name: "LegitiDevs",
+					url: "https://legiti.dev"
+				},
+				license: {
+					name: "MIT",
+					url: "https://github.com/LegitiDevs/api/blob/master/LICENSE"
+				},
+				version: packageJson.version,
+			}
+		}
+	})
 
 	await fastify.register(FastifyAutoLoad, {
 		dir: path.join(__dirname, "routes"),
 		routeParams: true,
-		options: Object.assign({}, opts),
+		options: {
+			apiVersion: packageJson.version
+		},
 	});
 
 	fastify.setNotFoundHandler({

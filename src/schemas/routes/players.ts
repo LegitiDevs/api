@@ -1,6 +1,7 @@
 import { PlayerSortBySchema } from "#schemas/players.js"
 import { GetPlayerOptionsSchema } from "#schemas/services/players.js"
 import { ListWorldsOptionsSchema } from "#schemas/services/worlds.js"
+import { FastifySchema } from "fastify"
 import Type from "typebox"
 
 export const SchemaGetPlayer = { 
@@ -8,7 +9,7 @@ export const SchemaGetPlayer = {
     querystring: Type.Object({
         project: Type.Optional(Type.String())
     })
-}
+} satisfies FastifySchema
 
 export const SchemaGetPlayerList = { 
     querystring: Type.Intersect([
@@ -18,4 +19,4 @@ export const SchemaGetPlayerList = {
             project: Type.String(),
         }))
     ])
-}
+} satisfies FastifySchema
