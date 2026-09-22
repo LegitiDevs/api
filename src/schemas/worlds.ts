@@ -59,8 +59,6 @@ export const WorldSchema = Type.Object({
 
     // Jam info
     jam: JamSchema,
-    jam_id: NumberIdSchema,
-    jam_world: Type.Boolean(),
 
     // Numbers
     player_count: WholeNumberSchema,
