@@ -37,47 +37,52 @@ export const WorldUuidSchema = Type.Union([UuidSchema, Type.Literal("lobby")], {
     examples: ['de9b06f4-39ea-4143-b0db-e4db7060b842', 'lobby']
 })
 
-export const WorldSchema = Type.Object({
-    // Main info
-    name: Type.String(),
-    icon: Type.String({ description: "A Minecraft item ID." }),
-    description: Type.String(),
+export const WorldSchema = Type.Object(
+	{
+		// Main info
+		name: Type.String({ examples: ["Legitimoose Lobby"] }),
+		icon: Type.String({ description: "A Minecraft item ID." }),
+		description: Type.String({ examples: ["My Awesome World"] }),
 
-    normalized_name: Type.String({ description: "NFKC normalized name." }),
-    raw_name: TextComponentSchema,
-    raw_description: TextComponentSchema,
+		normalized_name: Type.String({ description: "NFKC normalized name." }),
+		raw_name: TextComponentSchema,
+		raw_description: TextComponentSchema,
 
-    owner_name: Type.String(),
-    owner_uuid: UuidSchema,
+		owner_name: Type.String({ examples: ["Steve"] }),
+		owner_uuid: UuidSchema,
 
-    // World metadata
-    world_uuid: WorldUuidSchema,
-    creation_date: Type.String(),
-    creation_date_unix_seconds: UnixTimestampSchema,
-    enforce_whitelist: Type.Boolean(),
-    featured_instant: Type.Union([Type.Literal(-1), UnixTimestampSchema], { description: "Timestamp when this world was featured. This world is not featured if the value matches `-1`." }),
+		// World metadata
+		world_uuid: WorldUuidSchema,
+		creation_date: Type.String({ examples: "Sep 30, 2026, 8:00 AM" }),
+		creation_date_unix_seconds: UnixTimestampSchema,
+		enforce_whitelist: Type.Boolean(),
+		featured_instant: Type.Union([Type.Literal(-1), UnixTimestampSchema], {
+			description: "Timestamp when this world was featured. This world is not featured if the value matches `-1`.",
+		}),
 
-    // Jam info
-    jam: JamSchema,
+		// Jam info
+		jam: JamSchema,
 
-    // Numbers
-    player_count: WholeNumberSchema,
-    visits: WholeNumberSchema,
-    votes: WholeNumberSchema,
+		// Numbers
+		player_count: WholeNumberSchema,
+		visits: WholeNumberSchema,
+		votes: WholeNumberSchema,
 
-    // Misc.
-    locked: Type.Boolean({ description: "Whether this world is currently active." }),
-    max_datapack_size: WholeNumberSchema,
-    max_players: NaturalNumberSchema,
-    resource_pack_url: Type.Union([Type.Literal(""), URLSchema]),
-    version: Type.String({ description: "The minecraft version of this world." }), // do not trust minecraft versioning at all
-    whitelist_on_version_change: Type.Boolean(),
+		// Misc.
+		locked: Type.Boolean({ description: "Whether this world is currently active." }),
+		max_datapack_size: WholeNumberSchema,
+		max_players: NaturalNumberSchema,
+		resource_pack_url: Type.Union([Type.Literal(""), URLSchema]),
+		version: Type.String({ description: "The minecraft version of this world.", examples: ["26.3", "26.2", "1.21.10", "1.20.2"]}), // do not trust minecraft versioning at all
+		whitelist_on_version_change: Type.Boolean(),
 
-    // LegitiDevs info
-    last_scraped: UnixTimestampSchema,
-    last_scraped_ms: DateTimeSchema,
-    legitidevs: LegitiDevsSchema,
-}, { description: "Properties of a legitimoose.com world." })
+		// LegitiDevs info
+		last_scraped: UnixTimestampSchema,
+		last_scraped_ms: DateTimeSchema,
+		legitidevs: LegitiDevsSchema,
+	},
+	{ description: "Properties of a legitimoose.com world." },
+);
 export type World = Static<typeof WorldSchema>
 
 export const WorldStatsEntrySchema = Type.Object({

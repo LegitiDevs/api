@@ -47,14 +47,6 @@ export default async function (fastify: FastifyInstance, opts: FastifyPluginOpti
 	})
 	await fastify.register(FastifySwagger, openApiConfig)
 
-	fastify.addHook('onRoute', (routeOptions) => {
-	  if (!routeOptions.url.startsWith("/v4")) {
-	    routeOptions.schema ??= {};
-	    routeOptions.schema.hide = true;
-	  }
-	});
-
-
 	await fastify.register(FastifyAutoLoad, {
 		dir: path.join(__dirname, "routes"),
 		routeParams: true,

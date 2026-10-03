@@ -1,12 +1,12 @@
 import { Type } from "@fastify/type-provider-typebox";
 
-export const WholeNumberSchema = Type.Integer({ minimum: 0 })
-export const NaturalNumberSchema = Type.Integer({ minimum: 1 })
-export const UuidSchema = Type.String({ format: 'uuid' })
-export const DateTimeSchema = Type.String({ format: 'date-time' })
-export const URLSchema = Type.String({ format: 'url' })
+export const WholeNumberSchema = Type.Integer({ minimum: 0, examples: [0, 1, 2] })
+export const NaturalNumberSchema = Type.Integer({ minimum: 1, examples: [1, 2, 3] })
+export const UuidSchema = Type.String({ format: 'uuid', examples: ["00000000-1111-2222-3333-444444444444"] })
+export const DateTimeSchema = Type.String({ format: 'date-time', examples: ["2026-09-30T00:00:00+08:00"] })
+export const URLSchema = Type.String({ format: 'url', examples: ["https://legiti.dev/"] })
 
-export const UnixTimestampSchema = Type.Integer({ minimum: 0, description: "Unix Timestamp in seconds" })
+export const UnixTimestampSchema = Type.Integer({ minimum: 0, description: "Unix Timestamp in seconds", examples: [1790726400] })
 export const NumberIdSchema = Type.Integer({ minimum: 0, description: "Number-based identifier" })
 
 // Accepts [{any}, ...] or {any}
