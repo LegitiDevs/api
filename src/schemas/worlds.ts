@@ -53,7 +53,7 @@ export const WorldSchema = Type.Object(
 
 		// World metadata
 		world_uuid: WorldUuidSchema,
-		creation_date: Type.String({ examples: "Sep 30, 2026, 8:00 AM" }),
+		creation_date: Type.String({ examples: ["Sep 30, 2026, 8:00 AM"] }),
 		creation_date_unix_seconds: UnixTimestampSchema,
 		enforce_whitelist: Type.Boolean(),
 		featured_instant: Type.Union([Type.Literal(-1), UnixTimestampSchema], {
