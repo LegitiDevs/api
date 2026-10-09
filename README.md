@@ -22,11 +22,13 @@ To get started with the project, follow these steps:
 
 To run the api, follow these steps:
 
-1. Build the API.
+1. Make sure you have setup the indexes in your MongoDB collections via the scripts in the `scripts/` directory.
+
+2. Build the API.
 
 `pnpm run build`
 
-2. Run the API.
+3. Run the API.
 
 `pnpm run start`
 

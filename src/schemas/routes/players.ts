@@ -5,7 +5,7 @@ import { FastifySchema } from "fastify"
 import { checkSortByParameter } from "#schemas/formats.js"
 import { PlayerSchema } from "#schemas/players.js"
 
-import { GetPlayerOptionsSchema } from "#schemas/services/players.js"
+import { GetPlayerOptionsSchema, SearchPlayersOptionsSchema } from "#schemas/services/players.js"
 import { 
     GetWorldsFromPlayerOptionsSchema, 
     ListWorldsOptionsSchema 
@@ -96,3 +96,24 @@ export const SchemaGetWorldsFromPlayer = {
     tags: ["players"],
     operationId: "getWorldsFromPlayer"
 } satisfies FastifySchema
+
+export const SchemaSearchPlayer = {
+    querystring: Type.Intersect([
+        Type.Omit(SearchPlayersOptionsSchema, ["sort_by", "project"]),
+        Type.Partial(
+            Type.Object({
+                sort_by: PlayerSortBySchema,
+                project: ProjectQueryStringSchema,
+            }),
+        ),
+    ]),
+    response: {
+        200: Type.Array(Type.Partial(PlayerSchema)),
+    },
+
+    summary: "Search for worlds",
+    description:
+        "Returns a list of players that is relevant to the search query. This searches the `name` field.",
+    tags: ["players"],
+    operationId: "searchWorld",
+} satisfies FastifySchema;

@@ -11,6 +11,7 @@ import {
 	SchemaGetPlayer,
 	SchemaGetPlayerList,
 	SchemaGetWorldsFromPlayer,
+	SchemaSearchPlayer,
 } from "#schemas/routes/players.js";
 import { World } from "#schemas/worlds.js";
 import {
@@ -97,4 +98,17 @@ export class PlayersController {
 			offset,
 		});
 	};
+
+	searchPlayer = async (
+		request: FastifyRequestTypeBox<typeof SchemaSearchPlayer>, 
+		reply: FastifyReplyTypeBox<typeof SchemaSearchPlayer>
+	) => {
+		const query = request.query["query"]
+		const project = parseProject(request.query["project"]);
+		const sort_by = parseWorldSortBy(request.query["sort_by"]);
+		const limit = request.query["limit"] ?? undefined;
+		const offset = request.query["offset"] ?? undefined;
+
+		return await PlayersService.searchPlayer(this.fastify, { query, project, sort_by, limit, offset })
+	}
 }

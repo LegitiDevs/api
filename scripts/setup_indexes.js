@@ -18,9 +18,14 @@ async function run() {
 
 		// Stats collection
 		const stats = mongoclient.db(DB).collection("stats");
-
+		
 		const STATS_timestamp = await stats.createIndex({ timestamp: -1 });
-		console.log(`[stats] Index created: ${STATS_timestamp}`);
+		
+		// Players collection
+		const players = mongoclient.db(DB).collection("players");
+
+		const PLAYERS_name = await players.createIndex({ name: "text" });
+		console.log(`[players] Index created: ${PLAYERS_name}`);
 	} finally {
 		await mongoclient.close();
 	}

@@ -16,5 +16,13 @@ export const ListPlayersOptionsSchema = Type.Partial(
     })
 )
 
+export const SearchPlayersOptionsSchema = Type.Intersect([
+    ListPlayersOptionsSchema,
+    Type.Object({
+        query: Type.String({ description: "A search query", examples: ['chaos box', 'pvp', 'moose'] })
+    })
+])
+
 export type GetPlayerOptions = Static<typeof GetPlayerOptionsSchema>
 export type ListPlayersOptions = Static<typeof ListPlayersOptionsSchema>
+export type SearchPlayersOptions = Static<typeof SearchPlayersOptionsSchema>
