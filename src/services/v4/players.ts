@@ -63,11 +63,11 @@ export async function searchPlayer(fastify: FastifyInstance, { query, project, s
     if (!response.ok || !query) return [];
 
     const players = await response.json() as Player;
-    const sanitized_query = query.replaceAll(/[-"]/g,'')
+    const sanitized_query = RegExp.escape(query)
     
     const stages: Document[] = [
         { $documents: players },
-        { $match: { $text: { $search: sanitized_query } } },
+        { $match: { name: { $regex: new RegExp(sanitized_query), $options: "i" } } },
         { $sort: sort_by }
     ];  
 
