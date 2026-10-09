@@ -51,12 +51,15 @@ export async function searchWorld(collection: Collection<World>, { query, projec
 }
 
 export async function getWorld(collection: Collection<World>, { world_uuid, project }: GetWorldOptions) {
-    return await collection.findOne({ world_uuid }, { projection: project });
+    const hyphenated_world_uuid = standardizeUUID(world_uuid)
+    return await collection.findOne({ world_uuid: hyphenated_world_uuid }, { projection: project });
 }
 
 export async function getWorldsFromPlayer(collection: Collection<World>, { player_uuid, project, sort_by, limit, offset }: GetWorldsFromPlayerOptions) {
+    const hyphenated_player_uuid = standardizeUUID(player_uuid);
+
     const stages: Document[] = [
-        { $match: {...WORLDS_DEFAULT_FILTER, owner_uuid: player_uuid} }, 
+        { $match: {...WORLDS_DEFAULT_FILTER, owner_uuid: hyphenated_player_uuid} }, 
         { $sort: sort_by }
     ];
 
