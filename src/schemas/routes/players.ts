@@ -111,9 +111,9 @@ export const SchemaSearchPlayer = {
         200: Type.Array(Type.Partial(PlayerSchema)),
     },
 
-    summary: "Search for worlds",
+    summary: "Search for players",
     description:
         "Returns a list of players that is relevant to the search query. This searches the `name` field.",
     tags: ["players"],
-    operationId: "searchWorld",
+    operationId: "searchPlayer",
 } satisfies FastifySchema;

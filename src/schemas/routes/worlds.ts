@@ -19,8 +19,6 @@ import {
 } from "#schemas/worlds.js";
 import { ProjectQueryStringSchema } from "#schemas/routes/generic.js";
 
-// TODO: move regex checking logic to the controller, not the schema
-
 export const WorldSortMethodsEnum = Type.Union([
 	Type.Literal("default"),
 	Type.Literal("votes"),
