@@ -19,7 +19,7 @@ export const ListPlayersOptionsSchema = Type.Partial(
 export const SearchPlayersOptionsSchema = Type.Intersect([
     ListPlayersOptionsSchema,
     Type.Object({
-        query: Type.String({ description: "A search query", examples: ['chaos box', 'pvp', 'moose'] })
+        query: Type.String({ description: "A search query", examples: ['trp', 'legit', 'moose'] })
     })
 ])
 
